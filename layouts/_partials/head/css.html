@@ -1,0 +1,56 @@
+{{- $cssFiles := slice
+  (resources.Get "css/webtui/full.css")
+  (resources.Get "css/webtui/theme-catppuccin.css")
+  (resources.Get "css/webtui/plugin-declarative-layout.css")
+  (resources.Get "css/webtui/plugin-nf.css")
+  (resources.Get "css/main.css")
+-}}
+{{- $bundle := $cssFiles | resources.Concat "css/bundle.css" }}
+{{- $opts := dict
+  "minify" (cond hugo.IsDevelopment false true)
+  "sourceMap" (cond hugo.IsDevelopment "linked" "none")
+}}
+{{- with $bundle | css.Build $opts }}
+  {{- if hugo.IsDevelopment }}
+    <link rel="stylesheet" href="{{ .RelPermalink }}">
+  {{- else }}
+    {{- with . | fingerprint }}
+      <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{/* Dynamic Font Overrides from hugo.toml params.font */}}
+{{- $fontParams := site.Params.font | default dict -}}
+{{- $userGlobal := index $fontParams "global" | default (index $fontParams "base") | default "" -}}
+{{- $userParagraph := index $fontParams "paragraph" | default (index $fontParams "paragraphs") | default (index $fontParams "body") | default "" -}}
+{{- $userCode := index $fontParams "code" | default (index $fontParams "codeBlock") | default (index $fontParams "codeBlocks") | default "" -}}
+
+{{- if or (ne $userGlobal "") (ne $userParagraph "") (ne $userCode "") -}}
+<style>
+  :root {
+    {{- with $userGlobal -}}
+      {{- $family := . -}}
+      {{- if not (strings.Contains . "Symbols Nerd Font") -}}
+        {{- $family = printf `"%s", "JetBrainsMono Nerd Font", "Symbols Nerd Font", monospace` (replace . `"` ``) -}}
+      {{- end -}}
+      --font-family-global: {{ $family | safeCSS }};
+      --font-family: var(--font-family-global);
+    {{- end -}}
+    {{- with $userParagraph -}}
+      {{- $family := . -}}
+      {{- if not (strings.Contains . "Symbols Nerd Font") -}}
+        {{- $family = printf `"%s", "JetBrainsMono Nerd Font", "Symbols Nerd Font", monospace` (replace . `"` ``) -}}
+      {{- end -}}
+      --font-family-paragraph: {{ $family | safeCSS }};
+    {{- end -}}
+    {{- with $userCode -}}
+      {{- $family := . -}}
+      {{- if not (strings.Contains . "Symbols Nerd Font") -}}
+        {{- $family = printf `"%s", "JetBrainsMono Nerd Font", "Symbols Nerd Font", monospace` (replace . `"` ``) -}}
+      {{- end -}}
+      --font-family-code: {{ $family | safeCSS }};
+    {{- end -}}
+  }
+</style>
+{{- end -}}

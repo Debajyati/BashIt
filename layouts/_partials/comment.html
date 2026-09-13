@@ -1,0 +1,155 @@
+{{- $commentConfig := site.Params.comment | default dict -}}
+{{- $provider := $commentConfig.provider | default "disabled" | lower -}}
+
+{{- $enable := $commentConfig.enable | default false -}}
+{{- if isset .Params "comment" -}}
+  {{- $enable = .Params.comment -}}
+{{- else if isset .Params "comments" -}}
+  {{- $enable = .Params.comments -}}
+{{- end -}}
+
+{{- if and $enable (ne $provider "disabled") -}}
+  {{- $postSlug := .Slug | default .File.ContentBaseName | default "discussion" -}}
+
+  {{- /* =====================================================================
+       1. CLOUDFLARE WORKERS + D1 TERMINAL BBS COMMENTS
+       ===================================================================== */ -}}
+  {{- if eq $provider "cloudflare" -}}
+    {{- $cf := $commentConfig.cloudflare | default dict -}}
+    {{- $apiEndpoint := $cf.api | default "" -}}
+    {{- $mockMode := $cf.mockMode | default false -}}
+
+    <section class="tui-comments-container" box-="square" id="comments">
+      <div class="tui-comments-header">
+        <row align-="between" style="flex-wrap: wrap; gap: 0.5rem;">
+          <span is-="badge" variant-="green">󰭹 TERMINAL BBS // COMMENTS</span>
+          <span class="tui-comments-meta" style="color: var(--foreground2); font-size: 0.85em;">[ thread: {{ $postSlug }} ]</span>
+        </row>
+      </div>
+
+      <!-- Existing Comments Thread -->
+      <div id="tui-comments-list" class="tui-bbs-thread" style="margin-bottom: 1.5rem;">
+        <div class="tui-bbs-loading" style="padding: 1rem 0; color: var(--foreground2);">
+          <span is-="spinner" variant-="cursor"></span> Fetching terminal bulletin messages...
+        </div>
+      </div>
+
+      <!-- Add New Comment Form (Native WebTUI Form) -->
+      <div class="tui-bbs-form-card" box-="round" style="padding: 1.25rem;">
+        <div style="margin-bottom: 1rem;">
+          <span is-="badge" variant-="blue">󰅫 POST NEW MESSAGE</span>
+        </div>
+
+        <form id="tui-bbs-form" class="tui-bbs-form" data-slug="{{ $postSlug }}" data-api="{{ $apiEndpoint }}" data-mock="{{ $mockMode }}">
+          <!-- Bot Honeypot (hidden from human users) -->
+          <div style="display: none;" aria-hidden="true">
+            <label>Leave blank: <input type="text" name="website_hp" tabindex="-1" autocomplete="off"></label>
+          </div>
+
+          <row gap-="1" style="margin-bottom: 0.75rem; flex-wrap: wrap;">
+            <column style="flex: 1; min-width: 180px;">
+              <label style="font-size: 0.85em; color: var(--foreground1); margin-bottom: 0.25rem;">&gt; Call-sign / Nickname *</label>
+              <input is-="input" type="text" name="author" placeholder="user@root" required maxlength="50" style="width: 100%;">
+            </column>
+            <column style="flex: 1; min-width: 180px;">
+              <label style="font-size: 0.85em; color: var(--foreground2); margin-bottom: 0.25rem;">&gt; Email (optional, kept private)</label>
+              <input is-="input" type="email" name="email" placeholder="contact@domain.tld" maxlength="100" style="width: 100%;">
+            </column>
+          </row>
+
+          <column style="margin-bottom: 1rem;">
+            <label style="font-size: 0.85em; color: var(--foreground1); margin-bottom: 0.25rem;">&gt; Message body *</label>
+            <textarea is-="textarea" name="content" rows="4" placeholder="Transmit your message to the terminal BBS..." required maxlength="2000" style="width: 100%;"></textarea>
+          </column>
+
+          <row align-="between" style="align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <span id="tui-bbs-status" style="font-size: 0.9em; font-family: var(--font-family);"></span>
+            <button is-="button" variant-="foreground0" size-="small" type="submit" style="cursor: pointer;">
+              [ 󰆚 Send Message ]
+            </button>
+          </row>
+        </form>
+      </div>
+    </section>
+
+  {{- /* =====================================================================
+       2. GISCUS (GITHUB DISCUSSIONS BACKED) COMMENTS
+       ===================================================================== */ -}}
+  {{- else if eq $provider "giscus" -}}
+    {{- $giscus := $commentConfig.giscus | default dict -}}
+    {{- $repo := $giscus.repo | default "" -}}
+    {{- $repoId := $giscus.repoId | default "" -}}
+    {{- $category := $giscus.category | default "Announcements" -}}
+    {{- $categoryId := $giscus.categoryId | default "" -}}
+    {{- $mapping := $giscus.mapping | default "pathname" -}}
+    {{- $reactions := $giscus.reactions | default "1" -}}
+    {{- $emitMetadata := $giscus.emitMetadata | default "0" -}}
+    {{- $inputPosition := $giscus.inputPosition | default "bottom" -}}
+    {{- $theme := $giscus.theme | default "dark" -}}
+    {{- $lang := $giscus.lang | default "en" -}}
+    {{- $lazy := $giscus.lazy | default false -}}
+
+    <section class="tui-comments-container" box-="square" id="comments">
+      <div class="tui-comments-header">
+        <row align-="between">
+          <span is-="badge" variant-="mauve">󰭹 COMMENTS // GISCUS</span>
+          <span class="tui-comments-meta" style="color: var(--foreground2); font-size: 0.85em;">[ github discussions ]</span>
+        </row>
+      </div>
+
+      {{- if $lazy -}}
+        <div id="giscus-lazy-wrapper" style="text-align: center; padding: 1.5rem 0;">
+          <button id="giscus-load-btn" is-="button" size-="small" variant-="foreground0" style="cursor: pointer;">
+            󰭹 [ Load Discussion Thread (GitHub) ]
+          </button>
+        </div>
+        <div id="giscus-thread" style="display: none;"></div>
+      {{- else -}}
+        <div id="giscus-thread"></div>
+      {{- end -}}
+    </section>
+
+    <script>
+      (function() {
+        var giscusLoaded = false;
+        function loadGiscus() {
+          if (giscusLoaded) return;
+          giscusLoaded = true;
+
+          var container = document.getElementById('giscus-thread');
+          var lazyBtn = document.getElementById('giscus-lazy-wrapper');
+          if (lazyBtn) lazyBtn.style.display = 'none';
+          if (container) container.style.display = 'block';
+
+          var s = document.createElement('script');
+          s.src = 'https://giscus.app/client.js';
+          s.setAttribute('data-repo', '{{ $repo }}');
+          s.setAttribute('data-repo-id', '{{ $repoId }}');
+          s.setAttribute('data-category', '{{ $category }}');
+          s.setAttribute('data-category-id', '{{ $categoryId }}');
+          s.setAttribute('data-mapping', '{{ $mapping }}');
+          s.setAttribute('data-strict', '0');
+          s.setAttribute('data-reactions-enabled', '{{ $reactions }}');
+          s.setAttribute('data-emit-metadata', '{{ $emitMetadata }}');
+          s.setAttribute('data-input-position', '{{ $inputPosition }}');
+          s.setAttribute('data-theme', '{{ $theme }}');
+          s.setAttribute('data-lang', '{{ $lang }}');
+          s.setAttribute('crossorigin', 'anonymous');
+          s.async = true;
+          (container || document.body).appendChild(s);
+        }
+
+        {{ if $lazy }}
+          var btn = document.getElementById('giscus-load-btn');
+          if (btn) btn.addEventListener('click', loadGiscus);
+        {{ else }}
+          if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            loadGiscus();
+          } else {
+            document.addEventListener('DOMContentLoaded', loadGiscus);
+          }
+        {{ end }}
+      })();
+    </script>
+  {{- end -}}
+{{- end -}}

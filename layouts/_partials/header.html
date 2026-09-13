@@ -1,0 +1,64 @@
+{{- $logo := "" -}}
+{{- $icon := "" -}}
+{{- $disableIcon := false -}}
+
+{{- with site.Params.navbar -}}
+  {{- if eq .disableIcon true -}}
+    {{- $disableIcon = true -}}
+  {{- end -}}
+  {{- with .logo }}{{ $logo = . }}{{ end -}}
+  {{- with .icon }}{{ $icon = . }}{{ end -}}
+  {{- with .emoji }}{{ if not $icon }}{{ $icon = . }}{{ end }}{{ end -}}
+{{- end -}}
+
+{{/* Check top-level site params fallbacks */}}
+{{- if not $logo -}}
+  {{- with site.Params.logo }}{{ $logo = . }}{{ end -}}
+{{- end -}}
+{{- if and (not $icon) (not $disableIcon) -}}
+  {{- with site.Params.icon }}{{ $icon = . }}{{ end -}}
+  {{- if not $icon -}}
+    {{- with site.Params.brandIcon }}{{ $icon = . }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+
+{{/* Explicit disable values */}}
+{{- if or (eq $icon false) (eq $icon "none") (eq $icon "false") -}}
+  {{- $disableIcon = true -}}
+  {{- $icon = "" -}}
+{{- end -}}
+
+{{/* Automatically treat image file paths in icon as logo */}}
+{{- if and (not $logo) $icon (findRE `(?i)\.(svg|png|jpg|jpeg|webp|gif|ico)(\?.*)?$` $icon) -}}
+  {{- $logo = $icon -}}
+  {{- $icon = "" -}}
+{{- end -}}
+
+{{/* Default to Vim logo if neither logo nor icon is specified */}}
+{{- if and (not $logo) (not $icon) (not $disableIcon) -}}
+  {{- $icon = "&#xe62b;" -}}
+{{- end -}}
+
+<nav box-="square" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 1rem; margin: 1rem;">
+  <div style="font-weight: bold; font-size: 1.2rem; display: flex; align-items: center;">
+    <a href="{{ site.Home.RelPermalink }}" style="color: var(--foreground0); text-decoration: none; display: inline-flex; align-items: center; gap: 0.6ch;">
+      {{- if and $logo (not $disableIcon) -}}
+        <img src="{{ $logo | relURL }}" alt="{{ site.Title }}" class="navbar-brand-logo" style="height: 1.25em; width: auto; vertical-align: middle; display: inline-block; object-fit: contain;">
+      {{- else if and $icon (not $disableIcon) -}}
+        <span class="navbar-brand-icon" style="font-family: 'Symbols Nerd Font', var(--font-family); font-weight: normal; display: inline-flex; align-items: center; line-height: 1;">
+          {{ $icon | safeHTML }}
+        </span>
+      {{- end -}}
+      <span>{{ site.Title }}</span>
+    </a>
+  </div>
+  <row style="gap: 1rem;">
+    {{- $page := . }}
+    {{- range site.Menus.main }}
+      {{- $active := or ($page.IsMenuCurrent .Menu .) ($page.HasMenuCurrent .Menu .) }}
+      <a href="{{ .URL }}" style="color: {{ if $active }}var(--green){{ else }}var(--foreground1){{ end }}; text-decoration: none;">
+        {{- if $active }}<mark variant-="background2">{{ .Name }}</mark>{{ else }}{{ .Name }}{{ end -}}
+      </a>
+    {{- end }}
+  </row>
+</nav>

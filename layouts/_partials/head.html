@@ -1,0 +1,21 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ printf "%s | %s" .Title site.Title }}{{ end }}</title>
+
+<!-- Fonts & Preconnections -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<!-- Preload JetBrains Mono Nerd Font for instant glyph rendering -->
+<link rel="preload" href="https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@latest/build/fonts/JetBrainsMonoNerdFont-Regular.woff2" as="font" type="font/woff2" crossorigin>
+
+{{- with site.Params.font.fontUrl | default site.Params.font.url -}}
+<link rel="stylesheet" href="{{ . | safeURL }}">
+{{- else -}}
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+{{- end -}}
+
+<!-- WebTUI & Theme CSS (built via Hugo Pipes from npm packages) -->
+{{ partialCached "head/css.html" . }}
+{{ partialCached "head/js.html" . }}
