@@ -1,0 +1,81 @@
+{{- $raw := cond .IsNamedParams (.Get "repo") (.Get 0) | default "" -}}
+{{- $cleanRepo := $raw -}}
+{{- if findRE `github\.com/([^/]+/[^/?#]+)` $raw -}}
+  {{- $match := index (findRE `github\.com/([^/]+/[^/?#]+)` $raw) 0 -}}
+  {{- $cleanRepo = strings.TrimPrefix "github.com/" $match -}}
+{{- end -}}
+{{- $cleanRepo = strings.TrimSuffix ".git" $cleanRepo -}}
+{{- $url := printf "https://github.com/%s" $cleanRepo -}}
+
+{{- $apiDesc := "" -}}
+{{- $apiStars := "" -}}
+{{- $apiForks := "" -}}
+{{- $apiLang := "" -}}
+{{- $apiLicense := "" -}}
+
+{{- if ne $cleanRepo "" -}}
+  {{- $cacheKey := printf "gh-%x" (sha1 $cleanRepo) -}}
+  {{- $cached := site.Store.Get $cacheKey -}}
+  {{- if not $cached -}}
+    {{- $api := printf "https://api.github.com/repos/%s" $cleanRepo -}}
+    {{- $res := resources.GetRemote $api (dict "headers" (dict "User-Agent" "Hugo-BashIt-Theme")) -}}
+    {{- if $res -}}
+      {{- $data := $res | transform.Unmarshal -}}
+      {{- with $data -}}
+        {{- with .description }}{{ $apiDesc = . }}{{ end -}}
+        {{- with .stargazers_count }}{{ $apiStars = printf "%v" . }}{{ end -}}
+        {{- with .forks_count }}{{ $apiForks = printf "%v" . }}{{ end -}}
+        {{- with .language }}{{ $apiLang = . }}{{ end -}}
+        {{- with .license }}{{ with .spdx_id }}{{ $apiLicense = . }}{{ end }}{{ end -}}
+      {{- end -}}
+      {{- site.Store.Set $cacheKey (dict "desc" $apiDesc "stars" $apiStars "forks" $apiForks "lang" $apiLang "license" $apiLicense) -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $apiDesc = $cached.desc -}}
+    {{- $apiStars = $cached.stars -}}
+    {{- $apiForks = $cached.forks -}}
+    {{- $apiLang = $cached.lang -}}
+    {{- $apiLicense = $cached.license -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $description := .Get "description" | default $apiDesc -}}
+{{- $stars := .Get "stars" | default $apiStars -}}
+{{- $forks := .Get "forks" | default $apiForks -}}
+{{- $language := .Get "language" | default $apiLang -}}
+{{- $license := .Get "license" | default $apiLicense -}}
+
+<div class="tui-social-embed tui-github-embed" box-="square" style="padding: 1.25rem; margin: 1.5rem 0; background-color: var(--background0); max-width: 680px;">
+  <div class="tui-embed-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+    <div style="display: flex; align-items: center; gap: 0.8ch;">
+      <span is-="badge" variant-="lavender"> GITHUB</span>
+      <span style="color: var(--green); font-size: 0.85em;">● Active Repository</span>
+    </div>
+    <span style="color: var(--foreground2); font-size: 0.8em; font-family: var(--font-family);">git clone {{ $url }}.git</span>
+  </div>
+
+  <h3 style="margin: 0.5rem 0; font-size: 1.3rem;">
+    <a href="{{ $url }}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 0.6ch;">
+      <span style="font-family: 'Symbols Nerd Font';">&#xf401;</span>
+      <strong>{{ $cleanRepo }}</strong>
+    </a>
+  </h3>
+
+  {{- with $description -}}
+    <div class="tui-github-body" style="font-family: var(--font-family); font-size: 0.95rem; line-height: 1.5; color: var(--foreground1); margin: 0.75rem 0;">
+      {{ . | markdownify }}
+    </div>
+  {{- end -}}
+
+  <div class="tui-embed-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px dashed var(--background2); font-size: 0.85em; flex-wrap: wrap; gap: 0.5rem;">
+    <div style="display: flex; gap: 0.8ch; align-items: center; flex-wrap: wrap;">
+      {{- with $language -}}<span is-="badge" variant-="yellow">󰅫 {{ . }}</span>{{- end -}}
+      {{- with $stars -}}<span is-="badge" variant-="peach">★ {{ . }}</span>{{- end -}}
+      {{- with $forks -}}<span is-="badge" variant-="teal">󰘬 {{ . }}</span>{{- end -}}
+      {{- with $license -}}<span is-="badge" variant-="background2">󰈙 {{ . }}</span>{{- end -}}
+    </div>
+    <a is-="button" variant-="foreground0" size-="small" href="{{ $url }}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+      [  Star on GitHub → ]
+    </a>
+  </div>
+</div>

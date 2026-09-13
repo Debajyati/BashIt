@@ -1,0 +1,56 @@
+{{- $type := cond .IsNamedParams (.Get "type") (.Get 0) | default "note" | lower -}}
+{{- $rawTitle := cond .IsNamedParams (.Get "title") (.Get 1) -}}
+{{- $openParam := cond .IsNamedParams (.Get "open") (.Get 2) -}}
+{{- $isOpen := true -}}
+{{- if or (eq $openParam false) (eq $openParam "false") -}}
+  {{- $isOpen = false -}}
+{{- end -}}
+
+{{- $iconMap := dict
+  "note" "󰎞"
+  "abstract" "󰨸"
+  "info" "󰋼"
+  "tip" "󰌵"
+  "success" "󰄲"
+  "question" ""
+  "warning" "󱈸"
+  "failure" "󰅙"
+  "danger" "󰚌"
+  "bug" ""
+  "example" "󰉹"
+  "quote" "󰝗"
+  "important" "󰅚"
+  "caution" "󰀪"
+-}}
+
+{{- $variantMap := dict
+  "note" "blue"
+  "abstract" "sapphire"
+  "info" "sky"
+  "tip" "teal"
+  "success" "green"
+  "question" "green"
+  "warning" "yellow"
+  "failure" "red"
+  "danger" "red"
+  "bug" "maroon"
+  "example" "mauve"
+  "quote" "peach"
+  "important" "lavender"
+  "caution" "red"
+-}}
+
+{{- $icon := index $iconMap $type | default "󰎞" -}}
+{{- $variant := index $variantMap $type | default "blue" -}}
+{{- $defaultTitle := $type | title -}}
+{{- $title := $rawTitle | default $defaultTitle -}}
+
+<details class="admonition admonition-{{ $type }}" box-="square"{{ if $isOpen }} open{{ end }}>
+  <summary class="admonition-title">
+    <span is-="badge" variant-="{{ $variant }}"><span class="admonition-icon">{{ $icon }}</span> {{ $title }}</span>
+    <span class="admonition-chevron"></span>
+  </summary>
+  <div class="admonition-content">
+    {{- .Inner | markdownify -}}
+  </div>
+</details>

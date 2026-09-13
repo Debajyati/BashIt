@@ -1,0 +1,37 @@
+{{- $title := cond .IsNamedParams (.Get "title") (.Get 0) | default "" -}}
+{{- $summary := cond .IsNamedParams (.Get "summary") (.Get 1) | default "" -}}
+{{- $image := cond .IsNamedParams (.Get "image") (.Get 2) | default "" -}}
+{{- $link := cond .IsNamedParams (.Get "link") (.Get 3) | default "" -}}
+{{- $linkExtra := cond .IsNamedParams (.Get "link_extra" | default (.Get "linkExtra")) (.Get 4) | default "" -}}
+
+<div class="tui-showcase-card" box-="square">
+  {{- with $image -}}
+    <div class="tui-showcase-image" box-="round">
+      {{- if $link -}}
+        <a href="{{ $link }}" target="_blank" rel="noopener noreferrer">
+          <img src="{{ . }}" alt="{{ $title }}" loading="lazy">
+        </a>
+      {{- else -}}
+        <img src="{{ . }}" alt="{{ $title }}" loading="lazy">
+      {{- end -}}
+    </div>
+  {{- end -}}
+  <div class="tui-showcase-content">
+    <h3 style="margin-bottom: 0.5rem;">
+      {{- if $link -}}
+        <a href="{{ $link }}" target="_blank" rel="noopener noreferrer">{{ $title }}</a>
+      {{- else -}}
+        {{ $title }}
+      {{- end -}}
+    </h3>
+    <p style="color: var(--foreground1); margin-bottom: 0.8rem;">{{ $summary | markdownify }}</p>
+    <row gap-="1">
+      {{- if $link -}}
+        <a is-="button" size-="small" variant-="foreground0" href="{{ $link }}" target="_blank" rel="noopener noreferrer">[ Explore ↗ ]</a>
+      {{- end -}}
+      {{- if $linkExtra -}}
+        <a is-="button" size-="small" variant-="background2" href="{{ $linkExtra }}" target="_blank" rel="noopener noreferrer">[ Details ]</a>
+      {{- end -}}
+    </row>
+  </div>
+</div>

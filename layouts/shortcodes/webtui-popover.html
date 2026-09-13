@@ -1,0 +1,6 @@
+<details is-="popover">
+  <summary is-="button" size-="small" style="cursor: pointer;">{{ .Get "summary" | default "Options" }}</summary>
+  <div position-="{{ .Get "position" | default "bottom left" }}" box-="square" style="background-color: var(--background0); padding: 0.5lh 1ch; min-width: 15ch;">
+    {{ .Inner }}
+  </div>
+</details>

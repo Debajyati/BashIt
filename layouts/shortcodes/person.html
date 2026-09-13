@@ -1,0 +1,22 @@
+{{- $name := cond .IsNamedParams (.Get "name") (.Get 0) | default "Author" -}}
+{{- $avatar := cond .IsNamedParams (.Get "avatar") (.Get 1) | default "" -}}
+{{- $bio := cond .IsNamedParams (.Get "bio") (.Get 2) | default "" -}}
+{{- $url := cond .IsNamedParams (.Get "url") (.Get 3) | default "" -}}
+
+<div class="tui-friend-card" box-="square">
+  {{- with $avatar -}}
+    <img class="tui-friend-avatar" src="{{ . }}" alt="{{ $name }}" loading="lazy">
+  {{- end -}}
+  <div>
+    <strong>
+      {{- if $url -}}
+        <a href="{{ $url }}" target="_blank" rel="noopener noreferrer"> {{ $name }}</a>
+      {{- else -}}
+         {{ $name }}
+      {{- end -}}
+    </strong>
+    {{- with $bio -}}
+      <div style="font-size: 0.9em; color: var(--foreground2);">{{ . }}</div>
+    {{- end -}}
+  </div>
+</div>

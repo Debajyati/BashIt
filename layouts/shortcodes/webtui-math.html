@@ -1,0 +1,9 @@
+{{- $title := .Get "title" | default "󰪚 MATH" -}}
+<div class="tui-math-container" box-="square">
+  <div class="tui-math-header">
+    <span is-="badge" variant-="sapphire">{{ $title }}</span>
+  </div>
+  <div class="tui-math-body">
+    {{ .Inner }}
+  </div>
+</div>

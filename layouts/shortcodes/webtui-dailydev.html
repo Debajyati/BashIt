@@ -1,0 +1,108 @@
+{{- $raw := cond .IsNamedParams (.Get "url") (.Get 0) | default "https://daily.dev" -}}
+{{- $url := $raw -}}
+
+{{- $apiTitle := "" -}}
+{{- $apiDesc := "" -}}
+{{- $apiImage := "" -}}
+
+{{- if and (ne $url "") (ne $url "https://daily.dev") -}}
+  {{- $cacheKey := printf "dailydev-%x" (sha1 $url) -}}
+  {{- $cached := site.Store.Get $cacheKey -}}
+  {{- if not $cached -}}
+    {{- $scraperBase := cond .IsNamedParams (.Get "scraperApi") nil | default site.Params.opengraph.scraperApi | default site.Params.scraperApi | default site.Params.xogapi | default "https://xogapi.ddebajyati.workers.dev" -}}
+    {{- $api := "" -}}
+    {{- if strings.Contains $scraperBase "%s" -}}
+      {{- $api = printf $scraperBase (urlquery $url) -}}
+    {{- else -}}
+      {{- $sep := cond (strings.Contains $scraperBase "?") "&" "?" -}}
+      {{- $api = printf "%s%surl=%s" (strings.TrimSuffix "/" $scraperBase) $sep (urlquery $url) -}}
+    {{- end -}}
+    {{- $res := resources.GetRemote $api -}}
+    {{- if $res -}}
+      {{- $data := $res | transform.Unmarshal -}}
+      {{- with $data -}}
+        {{- with .openGraph -}}
+          {{- with .title }}{{ $apiTitle = . }}{{ end -}}
+          {{- with .description }}{{ $apiDesc = . }}{{ end -}}
+          {{- with .image }}{{ $apiImage = . }}{{ end -}}
+        {{- end -}}
+        {{- with .xTwitter -}}
+          {{- if not $apiTitle }}{{ with .title }}{{ $apiTitle = . }}{{ end }}{{ end -}}
+          {{- if not $apiDesc }}{{ with .description }}{{ $apiDesc = . }}{{ end }}{{ end -}}
+          {{- if not $apiImage }}{{ with .image }}{{ $apiImage = . }}{{ end }}{{ end -}}
+        {{- end -}}
+      {{- end -}}
+      {{- if strings.Contains $apiImage "?" -}}
+        {{- $apiImage = index (split $apiImage "?") 0 -}}
+      {{- end -}}
+      {{- site.Store.Set $cacheKey (dict "title" $apiTitle "desc" $apiDesc "image" $apiImage) -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $apiTitle = $cached.title -}}
+    {{- $apiDesc = $cached.desc -}}
+    {{- $apiImage = $cached.image -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $title := .Get "title" | default $apiTitle | default "daily.dev - Where developers discover what's next" -}}
+{{- $summary := .Get "summary" | default $apiDesc | default "" -}}
+{{- $image := .Get "image" | default $apiImage -}}
+{{- $source := .Get "source" | default "" -}}
+{{- $upvotes := .Get "upvotes" | default "" -}}
+{{- $comments := .Get "comments" | default "" -}}
+{{- $readtime := .Get "readtime" | default "" -}}
+{{- $tags := .Get "tags" | default "" -}}
+
+{{- $tagList := slice -}}
+{{- if reflect.IsSlice $tags -}}
+  {{- $tagList = $tags -}}
+{{- else if ne $tags "" -}}
+  {{- $tagList = split $tags "," -}}
+{{- end -}}
+
+<div class="tui-social-embed tui-dailydev-embed" box-="square" style="padding: 1.25rem; margin: 1.5rem 0; background-color: var(--background0); max-width: 680px;">
+  <div class="tui-embed-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+    <div style="display: flex; align-items: center; gap: 0.8ch;">
+      <span is-="badge" variant-="mauve">󰃚 DAILY.DEV</span>
+      {{- with $source -}}
+        <span style="color: var(--teal); font-weight: bold; font-size: 0.9em;">[ {{ . }} ]</span>
+      {{- end -}}
+    </div>
+    {{- with $readtime -}}
+      <span style="color: var(--foreground2); font-size: 0.85em;">󰅐 {{ . }}</span>
+    {{- else -}}
+      <span style="color: var(--foreground2); font-size: 0.8em; font-family: var(--font-family);">[ CURATED POST ]</span>
+    {{- end -}}
+  </div>
+
+  {{- with $image -}}
+    <div class="tui-dailydev-image" style="margin: 0.75rem 0; border: 1px solid var(--box-border-color, var(--background2)); overflow: hidden; background-color: #000; max-height: 280px; display: flex; align-items: center; justify-content: center; border-radius: 4px;">
+      <img src="{{ . }}" alt="{{ $title }}" style="width: 100%; height: 100%; object-fit: cover; display: block;" loading="lazy">
+    </div>
+  {{- end -}}
+
+  <h3 style="margin: 0.5rem 0; font-size: 1.25rem;">
+    <a href="{{ $url }}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">{{ $title }}</a>
+  </h3>
+
+  {{- with $summary -}}
+    <div class="tui-dailydev-body" style="font-family: var(--font-family); font-size: 0.95rem; line-height: 1.5; color: var(--foreground1); margin: 0.75rem 0;">
+      {{ . | markdownify }}
+    </div>
+  {{- end -}}
+
+  <div class="tui-embed-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px dashed var(--background2); font-size: 0.85em; flex-wrap: wrap; gap: 0.5rem;">
+    <div style="display: flex; gap: 1.2ch; align-items: center; flex-wrap: wrap;">
+      {{- with $upvotes -}}<span style="color: var(--peach); font-weight: bold;">▲ {{ . }} upvotes</span>{{- end -}}
+      {{- with $comments -}}<span style="color: var(--foreground2);">󰭹 {{ . }} comments</span>{{- end -}}
+      {{- range $tagList -}}
+        {{- with strings.TrimSpace (printf "%v" .) -}}
+          <span is-="badge" variant-="background2">#{{ . }}</span>
+        {{- end -}}
+      {{- end -}}
+    </div>
+    <a is-="button" variant-="background1" size-="small" href="{{ $url }}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+      [ 󰃚 View on Daily.dev → ]
+    </a>
+  </div>
+</div>

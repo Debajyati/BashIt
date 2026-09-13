@@ -1,0 +1,53 @@
+{{- $postSlug := .Get "slug" | default .Page.Slug | default .Page.File.ContentBaseName | default "discussion" -}}
+{{- $cf := site.Params.comment.cloudflare | default dict -}}
+{{- $apiEndpoint := .Get "api" | default $cf.api | default "" -}}
+{{- $mockMode := .Get "mock" | default $cf.mockMode | default false -}}
+
+<div class="tui-comments-container" box-="square">
+  <div class="tui-comments-header">
+    <row align-="between" style="flex-wrap: wrap; gap: 0.5rem;">
+      <span is-="badge" variant-="green">󰭹 TERMINAL BBS // COMMENTS</span>
+      <span class="tui-comments-meta" style="color: var(--foreground2); font-size: 0.85em;">[ thread: {{ $postSlug }} ]</span>
+    </row>
+  </div>
+
+  <div class="tui-bbs-thread" style="margin-bottom: 1.5rem;">
+    <div class="tui-bbs-loading" style="padding: 1rem 0; color: var(--foreground2);">
+      <span is-="spinner" variant-="cursor"></span> Fetching terminal bulletin messages...
+    </div>
+  </div>
+
+  <div class="tui-bbs-form-card" box-="round" style="padding: 1.25rem;">
+    <div style="margin-bottom: 1rem;">
+      <span is-="badge" variant-="blue">󰅫 POST NEW MESSAGE</span>
+    </div>
+    <form class="tui-bbs-form" data-slug="{{ $postSlug }}" data-api="{{ $apiEndpoint }}" data-mock="{{ $mockMode }}">
+      <div style="display: none;" aria-hidden="true">
+        <label>Leave blank: <input type="text" name="website_hp" tabindex="-1" autocomplete="off"></label>
+      </div>
+
+      <row gap-="1" style="margin-bottom: 0.75rem; flex-wrap: wrap;">
+        <column style="flex: 1; min-width: 180px;">
+          <label style="font-size: 0.85em; color: var(--foreground1); margin-bottom: 0.25rem;">&gt; Call-sign / Nickname *</label>
+          <input is-="input" type="text" name="author" placeholder="user@root" required maxlength="50" style="width: 100%;">
+        </column>
+        <column style="flex: 1; min-width: 180px;">
+          <label style="font-size: 0.85em; color: var(--foreground2); margin-bottom: 0.25rem;">&gt; Email / Website (optional)</label>
+          <input is-="input" type="text" name="email" placeholder="contact@domain.tld" maxlength="100" style="width: 100%;">
+        </column>
+      </row>
+
+      <column style="margin-bottom: 1rem;">
+        <label style="font-size: 0.85em; color: var(--foreground1); margin-bottom: 0.25rem;">&gt; Message body *</label>
+        <textarea is-="textarea" name="content" rows="4" placeholder="Transmit your message to the terminal BBS..." required maxlength="2000" style="width: 100%;"></textarea>
+      </column>
+
+      <row align-="between" style="align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+        <span class="tui-bbs-status" style="font-size: 0.9em; font-family: var(--font-family);"></span>
+        <button is-="button" variant-="foreground0" size-="small" type="submit" style="cursor: pointer;">
+          [ 󰆚 Send Message ]
+        </button>
+      </row>
+    </form>
+  </div>
+</div>

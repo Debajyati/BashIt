@@ -1,0 +1,82 @@
+{{- $raw := cond .IsNamedParams (.Get "id") (.Get 0) | default "" -}}
+{{- $user := .Get "user" | default (.Get "account") | default "" -}}
+{{- $caption := .Get "caption" | default "" -}}
+{{- $image := .Get "image" | default (.Get "src") | default "" -}}
+{{- $likes := .Get "likes" | default "" -}}
+
+{{- $id := $raw -}}
+{{- if findRE `instagram\.com/p/([a-zA-Z0-9_-]+)` $raw -}}
+  {{- $match := index (findRE `instagram\.com/p/([a-zA-Z0-9_-]+)` $raw) 0 -}}
+  {{- $sub := index (split $match "instagram.com/p/") 1 -}}
+  {{- $id = index (split $sub "/") 0 -}}
+{{- else if findRE `instagram\.com/reel/([a-zA-Z0-9_-]+)` $raw -}}
+  {{- $match := index (findRE `instagram\.com/reel/([a-zA-Z0-9_-]+)` $raw) 0 -}}
+  {{- $sub := index (split $match "instagram.com/reel/") 1 -}}
+  {{- $id = index (split $sub "/") 0 -}}
+{{- end -}}
+
+{{- if ne $id "" -}}
+<div class="tui-social-embed tui-instagram-embed" box-="square" style="padding: 1.25rem; margin: 1.5rem 0; background-color: var(--background0); max-width: 600px;">
+  <div class="tui-embed-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+    <div style="display: flex; align-items: center; gap: 0.8ch;">
+      <span is-="badge" variant-="pink"> INSTAGRAM</span>
+      <span style="color: var(--foreground1); font-family: var(--font-family); font-size: 0.9em;">Post: <code>{{ $id }}</code></span>
+    </div>
+    <span style="color: var(--foreground2); font-size: 0.8em; font-family: var(--font-family);">[ OFFICIAL EMBED ]</span>
+  </div>
+
+  <div class="tui-instagram-frame" style="width: 100%; border: 2px solid var(--box-border-color, var(--foreground0)); background-color: #fff; overflow: hidden; border-radius: 4px;">
+    <iframe
+      src="https://www.instagram.com/p/{{ $id }}/embed/captioned/"
+      width="100%"
+      height="620"
+      frameborder="0"
+      scrolling="no"
+      allowtransparency="true"
+      loading="lazy"
+      style="border: none; width: 100%; display: block;">
+    </iframe>
+  </div>
+
+  <div class="tui-embed-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed var(--background2); font-size: 0.85em; flex-wrap: wrap; gap: 0.5rem;">
+    <span style="color: var(--foreground2);"> Meta Instagram Transmission</span>
+    <a is-="button" variant-="background1" size-="small" href="https://www.instagram.com/p/{{ $id }}/" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+      [  View on Instagram → ]
+    </a>
+  </div>
+</div>
+{{- else -}}
+<div class="tui-social-embed tui-instagram-embed" box-="square" style="padding: 1.25rem; margin: 1.5rem 0; background-color: var(--background0); max-width: 580px;">
+  <div class="tui-embed-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+    <div style="display: flex; align-items: center; gap: 0.8ch;">
+      <span is-="badge" variant-="pink"> INSTAGRAM</span>
+      {{- with $user -}}
+        <strong style="color: var(--foreground0);">{{ . }}</strong>
+      {{- end -}}
+    </div>
+  </div>
+
+  {{- with $image -}}
+    <div class="tui-instagram-image" style="margin: 0.75rem 0; border: 2px solid var(--box-border-color, var(--foreground0)); overflow: hidden; background-color: #000; text-align: center;">
+      <img src="{{ . }}" alt="Instagram visual" style="max-width: 100%; height: auto; display: block; margin: 0 auto;" loading="lazy">
+    </div>
+  {{- end -}}
+
+  {{- with $caption -}}
+    <div class="tui-instagram-caption" style="font-family: var(--font-family); font-size: 0.95rem; line-height: 1.5; color: var(--foreground1); margin: 0.75rem 0;">
+      {{ . | markdownify }}
+    </div>
+  {{- end -}}
+
+  <div class="tui-embed-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed var(--background2); font-size: 0.85em; flex-wrap: wrap; gap: 0.5rem;">
+    {{- with $likes -}}
+      <span style="color: var(--red);"> {{ . }} likes</span>
+    {{- else -}}
+      <span></span>
+    {{- end -}}
+    <a is-="button" variant-="background1" size-="small" href="https://instagram.com" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+      [  View on Instagram → ]
+    </a>
+  </div>
+</div>
+{{- end -}}

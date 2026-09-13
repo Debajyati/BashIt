@@ -1,0 +1,8 @@
+{{- $defaultTab := .Get "defaultTab" | default 0 -}}
+{{- $containerId := printf "tabs-%d" (now.UnixNano) -}}
+<div class="tui-tabs-container" id="{{ $containerId }}" data-default-tab="{{ $defaultTab }}">
+  <div class="tui-tab-nav" role="tablist"></div>
+  <div class="tui-tab-panels" box-="square">
+    {{ .Inner }}
+  </div>
+</div>

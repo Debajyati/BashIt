@@ -1,0 +1,3 @@
+<div box-="{{ .Get "style" | default "square" }}" {{ with .Get "shear" }}shear-="{{ . }}"{{ end }} style="padding: 1rem; margin: 1rem 0;">
+  {{ .Inner | markdownify }}
+</div>

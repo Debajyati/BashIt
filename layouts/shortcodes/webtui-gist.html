@@ -1,0 +1,9 @@
+{{- $user := cond .IsNamedParams (.Get "user") (.Get 0) -}}
+{{- $id := cond .IsNamedParams (.Get "id") (.Get 1) -}}
+{{- $file := cond .IsNamedParams (.Get "file") (.Get 2) -}}
+<div class="tui-gist-container" box-="square" style="margin: 1.5rem 0; padding: 0.5rem;">
+  <div style="margin-bottom: 0.5rem;">
+    <span is-="badge" variant-="background2"> gist.github.com/{{ $user }}/{{ $id }}{{ with $file }}#{{ . }}{{ end }}</span>
+  </div>
+  <script src="https://gist.github.com/{{ $user }}/{{ $id }}.js{{ with $file }}?file={{ . }}{{ end }}"></script>
+</div>

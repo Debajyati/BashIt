@@ -1,0 +1,9 @@
+{{- $title := .Get "title" | default "DIAGRAM: mermaid" -}}
+<div class="mermaid-container" box-="square">
+  <div class="mermaid-header">
+    <span is-="badge" variant-="blue">󰈙 {{ $title }}</span>
+  </div>
+  <pre class="mermaid">
+{{ .Inner | safeHTML }}
+  </pre>
+</div>

@@ -1,0 +1,4 @@
+<label style="display: inline-flex; align-items: center; gap: 1ch; cursor: pointer;">
+  <input type="checkbox" is-="switch" {{ with .Get "bar" }}bar-="{{ . }}"{{ end }} {{ with .Get "size" }}size-="{{ . }}"{{ end }} {{ if or (.Get "checked") (.Get "value") }}checked{{ end }} {{ with .Get "name" }}name="{{ . }}"{{ end }} {{ with .Get "id" }}id="{{ . }}"{{ end }} {{ if .Get "disabled" }}disabled{{ end }}>
+  {{ with .Inner }}<span>{{ . }}</span>{{ end }}
+</label>

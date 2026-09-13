@@ -1,0 +1,29 @@
+{{- $repo := .Get "repo" | default site.Params.comment.giscus.repo -}}
+{{- $repoId := .Get "repoId" | default site.Params.comment.giscus.repoId -}}
+{{- $category := .Get "category" | default site.Params.comment.giscus.category | default "Announcements" -}}
+{{- $categoryId := .Get "categoryId" | default site.Params.comment.giscus.categoryId -}}
+{{- $theme := .Get "theme" | default site.Params.comment.giscus.theme | default "dark" -}}
+
+<div class="tui-comments-container" box-="square">
+  <div class="tui-comments-header">
+    <row align-="between">
+      <span is-="badge" variant-="mauve">󰭹 COMMENTS // GISCUS</span>
+    </row>
+  </div>
+  <div id="giscus-thread-shortcode"></div>
+  <script src="https://giscus.app/client.js"
+    data-repo="{{ $repo }}"
+    data-repo-id="{{ $repoId }}"
+    data-category="{{ $category }}"
+    data-category-id="{{ $categoryId }}"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="bottom"
+    data-theme="{{ $theme }}"
+    data-lang="en"
+    crossorigin="anonymous"
+    async>
+  </script>
+</div>

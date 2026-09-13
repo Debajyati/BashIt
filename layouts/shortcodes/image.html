@@ -1,0 +1,31 @@
+{{- $src := cond .IsNamedParams (.Get "src") (.Get 0) -}}
+{{- $alt := cond .IsNamedParams (.Get "alt") (.Get 1) | default "" -}}
+{{- $caption := cond .IsNamedParams (.Get "caption") (.Get 2) -}}
+{{- $align := .Get "align" | default "center" | lower -}}
+{{- $width := .Get "width" -}}
+{{- $height := .Get "height" -}}
+{{- $box := .Get "box" -}}
+{{- $title := .Get "title" | default $alt -}}
+{{- $link := .Get "link" | default (.Get "href") -}}
+{{- $linked := .Get "linked" -}}
+
+{{- if and (eq $link "") (or (eq $linked true) (eq $linked "true") (and (not (isset .Params "linked")) (ne $caption ""))) -}}
+  {{- $link = $src -}}
+{{- end -}}
+
+<figure class="tui-image-figure align-{{ $align }}">
+  <div class="tui-image-wrapper"{{ with $box }} box-="{{ . }}"{{ end }} style="{{ with $width }}width: {{ . }}; max-width: 100%;{{ end }}">
+    {{- if $link -}}
+      <a href="{{ $link }}" target="_blank" rel="noopener noreferrer">
+        <img src="{{ $src }}" alt="{{ $alt }}" {{ with $title }}title="{{ . }}"{{ end }} {{ with $height }}height="{{ . }}"{{ end }} loading="lazy">
+      </a>
+    {{- else -}}
+      <img src="{{ $src }}" alt="{{ $alt }}" {{ with $title }}title="{{ . }}"{{ end }} {{ with $height }}height="{{ . }}"{{ end }} loading="lazy">
+    {{- end -}}
+  </div>
+  {{- with $caption -}}
+    <figcaption class="tui-image-caption">
+      <span class="tui-caption-prefix">[IMAGE]</span>{{ . | markdownify }}
+    </figcaption>
+  {{- end -}}
+</figure>

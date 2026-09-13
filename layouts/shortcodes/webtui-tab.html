@@ -1,0 +1,4 @@
+{{- $title := .Get "title" | default (.Get 0) | default "Tab" -}}
+<div class="tui-tab-panel" data-title="{{ $title }}" role="tabpanel">
+  {{- .Inner | markdownify -}}
+</div>

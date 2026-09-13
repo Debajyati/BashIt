@@ -1,0 +1,8 @@
+{{- $title := .Get "title" | default (.Get 0) | default "Folder" -}}
+{{- $open := or (.Get "open") (eq (.Get "open") true) (eq (.Get "open") "true") -}}
+<details is-="accordion" variant-="directory"{{ if $open }} open{{ end }}>
+  <summary>{{ $title }}</summary>
+  <div class="webtui-accordion-content">
+    {{- .Inner | markdownify -}}
+  </div>
+</details>

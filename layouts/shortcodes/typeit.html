@@ -1,0 +1,17 @@
+{{- $speed := .Get "speed" | default 50 -}}
+{{- $cursor := .Get "cursor" | default "█" -}}
+{{- $prompt := .Get "prompt" | default "> " -}}
+{{- $title := .Get "title" | default " terminal" -}}
+{{- $rawContent := trim .Inner "\r\n" -}}
+{{- $id := printf "typeit-%d" (now.UnixNano) -}}
+
+<div class="typeit-box" box-="square">
+  <div class="typeit-header">
+    <span is-="badge" variant-="peach">{{ $title }}</span>
+  </div>
+  <div class="typeit-content">
+    <span class="typeit-prompt">{{ $prompt }}</span>
+    <span class="typeit-target" id="{{ $id }}" data-speed="{{ $speed }}" data-cursor="{{ $cursor }}" data-text="{{ $rawContent }}"></span>
+    <span class="typeit-cursor">{{ $cursor }}</span>
+  </div>
+</div>

@@ -1,0 +1,4 @@
+<label style="display: inline-flex; align-items: center; gap: 1ch; cursor: pointer;">
+  <input type="radio" name="{{ .Get "name" }}" value="{{ .Get "value" }}" {{ if .Get "checked" }}checked{{ end }} {{ with .Get "id" }}id="{{ . }}"{{ end }} {{ if .Get "disabled" }}disabled{{ end }}>
+  {{ with .Inner }}<span>{{ . }}</span>{{ end }}
+</label>

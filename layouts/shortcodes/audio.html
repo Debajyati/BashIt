@@ -1,0 +1,13 @@
+{{- $src := cond .IsNamedParams (.Get "src") (.Get 0) -}}
+{{- $title := cond .IsNamedParams (.Get "title") (.Get 1) | default "Audio Track" -}}
+{{- $artist := cond .IsNamedParams (.Get "artist") (.Get 2) | default "" -}}
+
+<div class="tui-audio-box" box-="square">
+  <div>
+    <span is-="badge" variant-="peach"> {{ $title }}{{ with $artist }} - {{ . }}{{ end }}</span>
+  </div>
+  <audio controls preload="none">
+    <source src="{{ $src }}">
+    Your browser does not support the audio element.
+  </audio>
+</div>

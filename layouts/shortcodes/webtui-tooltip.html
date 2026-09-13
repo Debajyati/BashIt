@@ -1,0 +1,6 @@
+<span is-="tooltip" style="display: inline-block;">
+  <span is-="tooltip-trigger">{{ .Inner }}</span>
+  <span is-="tooltip-content" {{ with .Get "position" }}position-="{{ . }}"{{ else }}position-="top"{{ end }}>
+    {{ .Get "tip" }}
+  </span>
+</span>

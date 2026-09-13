@@ -1,0 +1,4 @@
+{{- $val := .Get "value" | default "50" -}}
+{{- $max := .Get "max" | default "100" -}}
+{{- $label := .Get "label" | default (printf "%v%%" $val) -}}
+<div is-="progress" style="--progress-value: {{ $val }}; --progress-max: {{ $max }};" {{ with .Get "class" }}class="{{ . }}"{{ end }}>{{ $label }}</div>

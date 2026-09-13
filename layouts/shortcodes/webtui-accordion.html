@@ -1,0 +1,10 @@
+{{- $title := .Get "title" | default (.Get 0) | default "Accordion" -}}
+{{- $variant := .Get "variant" -}}
+{{- $open := or (.Get "open") (eq (.Get "open") true) (eq (.Get "open") "true") -}}
+<details is-="accordion"{{ with $variant }} variant-="{{ . }}"{{ end }}{{ if $open }} open{{ end }}>
+  <summary>{{ $title }}</summary>
+  <div class="webtui-accordion-content">
+    {{- .Inner | markdownify -}}
+  </div>
+</details>
+

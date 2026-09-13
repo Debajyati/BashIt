@@ -1,0 +1,11 @@
+{{- $name := .Get "name" | default (.Get 0) | default "file.txt" -}}
+{{- $icon := .Get "icon" | default "" -}}
+{{- $link := .Get "url" | default (.Get "href") -}}
+<div class="webtui-file-item" is-="file-item">
+  <span class="webtui-file-icon">{{ $icon }}</span>
+  {{- if $link -}}
+    <a href="{{ $link }}">{{ $name }}</a>
+  {{- else -}}
+    <span>{{ $name }}</span>
+  {{- end -}}
+</div>

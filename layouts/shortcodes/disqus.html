@@ -1,0 +1,61 @@
+{{- $shortname := .Get "shortname" | default site.Config.Services.Disqus.Shortname | default "" -}}
+{{- with site.Params.comment -}}
+  {{- with .disqus -}}
+    {{- with .shortname -}}
+      {{- if not ($.Get "shortname") -}}
+        {{- $shortname = . -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- with site.Params.disqusShortname -}}
+  {{- if not ($.Get "shortname") -}}
+    {{- $shortname = . -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if $shortname -}}
+<section class="tui-comments-container" box-="square">
+  <div class="tui-comments-header">
+    <row align-="between">
+      <span is-="badge" variant-="blue">󰭹 COMMENTS // DISQUS</span>
+      <span class="tui-comments-meta" style="color: var(--foreground2); font-size: 0.85em;">[ thread: {{ .Page.Slug | default .Page.File.ContentBaseName | default "discussion" }} ]</span>
+    </row>
+  </div>
+  <div id="disqus-loading" class="tui-comments-loading" style="padding: 1rem 0; color: var(--foreground2);">
+    <span is-="spinner" variant-="cursor"></span> Connecting to Disqus discussion thread...
+  </div>
+  <div id="disqus_thread"></div>
+  <noscript class="tui-comments-noscript">
+    Please enable JavaScript to view the comments powered by <a href="https://disqus.com/?ref_noscript" rel="nofollow">Disqus</a>.
+  </noscript>
+</section>
+
+<script>
+  (function() {
+    var disqus_shortname = '{{ $shortname }}';
+    window.disqus_config = function() {
+      this.page.url = '{{ .Page.Permalink }}';
+      this.page.identifier = '{{ .Page.RelPermalink }}';
+      this.page.title = '{{ .Page.Title }}';
+    };
+    var d = document, s = d.createElement('script');
+    s.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+
+    var loader = document.getElementById('disqus-loading');
+    var thread = document.getElementById('disqus_thread');
+    if (loader && thread) {
+      var observer = new MutationObserver(function(mutations, obs) {
+        if (thread.querySelector('iframe')) {
+          loader.style.display = 'none';
+          obs.disconnect();
+        }
+      });
+      observer.observe(thread, { childList: true });
+      setTimeout(function() { if (loader) loader.style.display = 'none'; }, 4000);
+    }
+  })();
+</script>
+{{- end -}}

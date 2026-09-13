@@ -1,0 +1,126 @@
+{{- $raw := cond .IsNamedParams (.Get "url") (.Get 0) | default "" -}}
+{{- $url := $raw -}}
+{{- $id := .Get "id" | default "" -}}
+
+{{- $apiTitle := "" -}}
+{{- $apiDesc := "" -}}
+{{- $apiAuthor := "" -}}
+{{- $apiUsername := "" -}}
+{{- $apiTags := "" -}}
+{{- $apiReactions := "" -}}
+{{- $apiComments := "" -}}
+{{- $apiReadTime := "" -}}
+{{- $apiDate := "" -}}
+
+{{- $apiUrl := "" -}}
+{{- if ne $id "" -}}
+  {{- $apiUrl = printf "https://dev.to/api/articles/%s" $id -}}
+{{- else if findRE `dev\.to/([^/]+)/([^/?#]+)` $url -}}
+  {{- $matches := findRE `dev\.to/([^/]+)/([^/?#]+)` $url -}}
+  {{- $path := strings.TrimPrefix "dev.to/" (index $matches 0) -}}
+  {{- $apiUrl = printf "https://dev.to/api/articles/%s" $path -}}
+{{- end -}}
+
+{{- if ne $apiUrl "" -}}
+  {{- $cacheKey := printf "devto-%x" (sha1 $apiUrl) -}}
+  {{- $cached := site.Store.Get $cacheKey -}}
+  {{- if not $cached -}}
+    {{- $res := resources.GetRemote $apiUrl -}}
+    {{- if $res -}}
+      {{- $data := $res | transform.Unmarshal -}}
+      {{- with $data -}}
+        {{- with .title }}{{ $apiTitle = . }}{{ end -}}
+        {{- with .description }}{{ $apiDesc = . }}{{ end -}}
+        {{- with .user -}}
+          {{- with .name }}{{ $apiAuthor = . }}{{ end -}}
+          {{- with .username }}{{ $apiUsername = . }}{{ end -}}
+        {{- end -}}
+        {{- with .readable_publish_date }}{{ $apiDate = . }}{{ end -}}
+        {{- with .reading_time_minutes }}{{ $apiReadTime = printf "%vm read" . }}{{ end -}}
+        {{- with .public_reactions_count }}{{ if gt . 0 }}{{ $apiReactions = printf "%v" . }}{{ end }}{{ end -}}
+        {{- with .comments_count }}{{ if gt . 0 }}{{ $apiComments = printf "%v" . }}{{ end }}{{ end -}}
+        {{- with .tag_list }}{{ $apiTags = . }}{{ else }}{{ with .tags }}{{ $apiTags = . }}{{ end }}{{ end -}}
+        {{- with .url }}{{ $url = . }}{{ end -}}
+      {{- end -}}
+      {{- site.Store.Set $cacheKey (dict "title" $apiTitle "desc" $apiDesc "author" $apiAuthor "username" $apiUsername "date" $apiDate "readTime" $apiReadTime "reactions" $apiReactions "comments" $apiComments "tags" $apiTags "url" $url) -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $apiTitle = $cached.title -}}
+    {{- $apiDesc = $cached.desc -}}
+    {{- $apiAuthor = $cached.author -}}
+    {{- $apiUsername = $cached.username -}}
+    {{- $apiDate = $cached.date -}}
+    {{- $apiReadTime = $cached.readTime -}}
+    {{- $apiReactions = $cached.reactions -}}
+    {{- $apiComments = $cached.comments -}}
+    {{- $apiTags = $cached.tags -}}
+    {{- $url = $cached.url -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $title := .Get "title" | default $apiTitle | default "Dev.to Post" -}}
+{{- $author := .Get "author" | default $apiAuthor -}}
+{{- $handle := .Get "handle" | default $apiUsername -}}
+{{- $date := .Get "date" | default $apiDate -}}
+{{- $readtime := .Get "readtime" | default $apiReadTime -}}
+{{- $tags := .Get "tags" | default $apiTags -}}
+{{- $reactions := .Get "reactions" | default $apiReactions -}}
+{{- $comments := .Get "comments" | default $apiComments -}}
+{{- $summary := .Get "summary" | default $apiDesc | default "" -}}
+{{- if eq $url "" }}{{ $url = "https://dev.to" }}{{ end -}}
+
+{{- $tagList := slice -}}
+{{- if reflect.IsSlice $tags -}}
+  {{- $tagList = $tags -}}
+{{- else if ne $tags "" -}}
+  {{- $tagList = split $tags "," -}}
+{{- end -}}
+
+<div class="tui-social-embed tui-devto-embed" box-="square" style="padding: 1.25rem; margin: 1.5rem 0; background-color: var(--background0); max-width: 680px;">
+  <div class="tui-embed-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+    <div style="display: flex; align-items: center; gap: 0.8ch;">
+      <span is-="badge" variant-="peach">󱁎 DEV.TO</span>
+      {{- if or (ne $readtime "") (ne $date "") -}}
+        <span style="color: var(--foreground2); font-size: 0.85em;">{{ delimit (slice $readtime $date) " • " }}</span>
+      {{- end -}}
+    </div>
+    {{- if or (ne $reactions "") (ne $comments "") -}}
+      <span style="color: var(--foreground2); font-size: 0.85em;">
+        {{- with $reactions -}}󰐕 {{ . }} reactions{{- end -}}
+        {{- if and (ne $reactions "") (ne $comments "") }} • {{ end -}}
+        {{- with $comments -}}󰭹 {{ . }} comments{{- end -}}
+      </span>
+    {{- end -}}
+  </div>
+
+  <h3 style="margin: 0.5rem 0; font-size: 1.25rem;">
+    <a href="{{ $url }}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">{{ $title }}</a>
+  </h3>
+
+  {{- if or (ne $author "") (ne $handle "") -}}
+    <div style="display: flex; align-items: center; gap: 0.6ch; font-size: 0.9em; color: var(--foreground1); margin-bottom: 0.75rem;">
+      <span></span>
+      {{- with $author -}}<strong>{{ . }}</strong>{{- end -}}
+      {{- with $handle -}}<span style="color: var(--foreground2);">(@{{ strings.TrimPrefix "@" . }})</span>{{- end -}}
+    </div>
+  {{- end -}}
+
+  {{- with $summary -}}
+    <div class="tui-devto-body" style="font-family: var(--font-family); font-size: 0.95rem; line-height: 1.5; color: var(--foreground1); margin: 0.75rem 0;">
+      {{ . | markdownify }}
+    </div>
+  {{- end -}}
+
+  <div class="tui-embed-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px dashed var(--background2); font-size: 0.85em; flex-wrap: wrap; gap: 0.5rem;">
+    <div style="display: flex; gap: 0.5ch; flex-wrap: wrap;">
+      {{- range $tagList -}}
+        {{- with strings.TrimSpace (printf "%v" .) -}}
+          <span is-="badge" variant-="background2">#{{ . }}</span>
+        {{- end -}}
+      {{- end -}}
+    </div>
+    <a is-="button" variant-="background1" size-="small" href="{{ $url }}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+      [ 󱁎 Read on DEV.to → ]
+    </a>
+  </div>
+</div>

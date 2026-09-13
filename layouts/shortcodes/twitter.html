@@ -1,0 +1,102 @@
+{{- $raw := cond .IsNamedParams (.Get "url") (.Get 0) | default "" -}}
+{{- $id := .Get "id" | default "" -}}
+{{- $user := .Get "user" | default (.Get "author") | default "" -}}
+{{- $name := .Get "name" | default "" -}}
+{{- $text := .Get "text" | default "" -}}
+{{- $date := .Get "date" | default "" -}}
+{{- $likes := .Get "likes" | default "" -}}
+{{- $retweets := .Get "retweets" | default "" -}}
+{{- $replies := .Get "replies" | default "" -}}
+{{- $verified := .Get "verified" | default false -}}
+
+{{- $url := $raw -}}
+{{- if and (not (findRE `^https?://` $raw)) (ne $raw "") -}}
+  {{- $id = $raw -}}
+  {{- if ne $user "" -}}
+    {{- $url = printf "https://x.com/%s/status/%s" (strings.TrimPrefix "@" $user) $id -}}
+  {{- else -}}
+    {{- $url = printf "https://x.com/i/status/%s" $id -}}
+  {{- end -}}
+{{- else if and (eq $url "") (ne $id "") -}}
+  {{- if ne $user "" -}}
+    {{- $url = printf "https://x.com/%s/status/%s" (strings.TrimPrefix "@" $user) $id -}}
+  {{- else -}}
+    {{- $url = printf "https://x.com/i/status/%s" $id -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if and (eq $id "") (ne $url "") -}}
+  {{- if findRE `/status/([0-9]+)` $url -}}
+    {{- $match := index (findRE `/status/([0-9]+)` $url) 0 -}}
+    {{- $id = strings.TrimPrefix "/status/" $match -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if eq $text "" -}}
+{{/* Official Twitter/X embed using Twitter widgets script with dark theme and DNT */}}
+<div class="tui-social-embed tui-x-embed" box-="square" style="padding: 1.25rem; margin: 1.5rem 0; background-color: var(--background0); max-width: 600px;">
+  <div class="tui-embed-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+    <div style="display: flex; align-items: center; gap: 0.8ch;">
+      <span is-="badge" variant-="foreground0">󰕄 X</span>
+      {{- with $id -}}
+        <span style="color: var(--foreground1); font-family: var(--font-family); font-size: 0.9em;">Status: <code>{{ . }}</code></span>
+      {{- end -}}
+    </div>
+    <span style="color: var(--foreground2); font-size: 0.8em; font-family: var(--font-family);">[ OFFICIAL EMBED ]</span>
+  </div>
+
+  <div class="tui-x-container" style="margin: 0.5rem 0; overflow: hidden; display: flex; justify-content: center;">
+    <blockquote class="twitter-tweet" data-theme="dark" data-dnt="true" style="margin: 0 auto;">
+      <a href="{{ $url }}"></a>
+    </blockquote>
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </div>
+
+  <div class="tui-embed-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed var(--background2); font-size: 0.85em; flex-wrap: wrap; gap: 0.5rem;">
+    <span style="color: var(--foreground2);">󰕄 X Public Transmission</span>
+    <a is-="button" variant-="foreground0" size-="small" href="{{ $url }}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+      [ 󰕄 Open on X → ]
+    </a>
+  </div>
+</div>
+{{- else -}}
+{{/* Manual WebTUI card with strictly user-supplied data (zero fake metrics) */}}
+<div class="tui-social-embed tui-x-embed" box-="square" style="padding: 1.25rem; margin: 1.5rem 0; background-color: var(--background0);">
+  <div class="tui-embed-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+    <div style="display: flex; align-items: center; gap: 0.8ch;">
+      <span is-="badge" variant-="foreground0">󰕄 X</span>
+      {{- with $name -}}
+        <strong style="color: var(--foreground0);">{{ . }}</strong>
+      {{- end -}}
+      {{- if or (eq $verified true) (eq $verified "true") -}}
+        <span style="color: var(--blue); font-size: 0.85em;" title="Verified">󰄲</span>
+      {{- end -}}
+      {{- with $user -}}
+        <span style="color: var(--foreground2); font-size: 0.9em;">@{{ strings.TrimPrefix "@" . }}</span>
+      {{- end -}}
+    </div>
+    {{- with $date -}}
+      <span style="color: var(--foreground2); font-size: 0.85em;">{{ . }}</span>
+    {{- end -}}
+  </div>
+
+  <div class="tui-x-body" style="font-family: var(--font-family); font-size: 1.05rem; line-height: 1.5; color: var(--foreground0); margin: 0.75rem 0; padding-left: 0.5ch;">
+    {{ $text | markdownify }}
+  </div>
+
+  {{- if or (ne $likes "") (ne $retweets "") (ne $replies "") (ne $url "") -}}
+  <div class="tui-embed-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px dashed var(--background2); font-size: 0.85em; flex-wrap: wrap; gap: 0.5rem;">
+    <div style="display: flex; gap: 1.5ch; color: var(--foreground2); align-items: center; flex-wrap: wrap;">
+      {{- with $replies -}}<span>󰅃 {{ . }}</span>{{- end -}}
+      {{- with $retweets -}}<span>󰑍 {{ . }}</span>{{- end -}}
+      {{- with $likes -}}<span> {{ . }}</span>{{- end -}}
+    </div>
+    {{- with $url -}}
+      <a is-="button" variant-="foreground0" size-="small" href="{{ . }}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+        [ 󰕄 Open on X → ]
+      </a>
+    {{- end -}}
+  </div>
+  {{- end -}}
+</div>
+{{- end -}}

@@ -1,0 +1,52 @@
+{{- $raw := cond .IsNamedParams (.Get "id") (.Get 0) | default "dQw4w9WgXcQ" -}}
+{{- $autoplay := cond .IsNamedParams (.Get "autoplay") (.Get 1) | default false -}}
+{{- $start := cond .IsNamedParams (.Get "start") (.Get 2) | default "" -}}
+
+{{- $id := $raw -}}
+{{- if findRE `(?i)(?:v=|youtu\.be/|embed/)[a-zA-Z0-9_-]{11}` $raw -}}
+  {{- $match := index (findRE `(?i)(?:v=|youtu\.be/|embed/)[a-zA-Z0-9_-]{11}` $raw) 0 -}}
+  {{- $idMatches := findRE `[a-zA-Z0-9_-]{11}` $match -}}
+  {{- if gt (len $idMatches) 0 -}}
+    {{- $id = index $idMatches 0 -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $src := printf "https://www.youtube-nocookie.com/embed/%s" $id -}}
+{{- $params := slice -}}
+{{- if or (eq $autoplay true) (eq $autoplay "true") -}}
+  {{- $params = $params | append "autoplay=1" -}}
+{{- end -}}
+{{- with $start -}}
+  {{- $params = $params | append (printf "start=%v" .) -}}
+{{- end -}}
+{{- if gt (len $params) 0 -}}
+  {{- $src = printf "%s?%s" $src (delimit $params "&") -}}
+{{- end -}}
+
+<div class="tui-social-embed tui-youtube-embed" box-="square" style="padding: 1.25rem; margin: 1.5rem 0; background-color: var(--background0);">
+  <div class="tui-embed-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+    <div style="display: flex; align-items: center; gap: 0.8ch;">
+      <span is-="badge" variant-="red">󰗃 YOUTUBE</span>
+      <span style="color: var(--foreground1); font-family: var(--font-family); font-size: 0.9em;">Stream: <code>{{ $id }}</code></span>
+    </div>
+    <span style="color: var(--green); font-size: 0.8em; font-family: var(--font-family);">● ONLINE • PRIVACY-MODE</span>
+  </div>
+
+  <div class="tui-video-container" style="position: relative; width: 100%; aspect-ratio: 16 / 9; border: 2px solid var(--box-border-color, var(--foreground0)); background-color: #000; overflow: hidden;">
+    <iframe
+      src="{{ $src }}"
+      title="YouTube Video Player"
+      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen
+      loading="lazy">
+    </iframe>
+  </div>
+
+  <div class="tui-embed-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; font-size: 0.85em; color: var(--foreground2); flex-wrap: wrap; gap: 0.5rem;">
+    <span>󰐊 1080p Privacy Stream</span>
+    <a is-="button" variant-="background1" size-="small" href="https://www.youtube.com/watch?v={{ $id }}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+      [ 󰗃 Watch on YouTube → ]
+    </a>
+  </div>
+</div>

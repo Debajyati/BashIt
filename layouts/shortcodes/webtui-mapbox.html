@@ -1,0 +1,16 @@
+{{- $lng := cond .IsNamedParams (.Get "lng") (.Get 0) | default "0" -}}
+{{- $lat := cond .IsNamedParams (.Get "lat") (.Get 1) | default "0" -}}
+{{- $zoom := cond .IsNamedParams (.Get "zoom") (.Get 2) | default 10 -}}
+{{- $marked := cond .IsNamedParams (.Get "marked") (.Get 3) | ne false -}}
+{{- $width := .Get "width" | default "100%" -}}
+{{- $height := .Get "height" | default "300px" -}}
+{{- $title := .Get "title" | default (printf "MAP: [%v, %v]" $lat $lng) -}}
+{{- $id := printf "mapbox-%d" (now.UnixNano) -}}
+{{- $token := site.Params.mapbox.accessToken | default "" -}}
+
+<div class="mapbox-container" box-="square">
+  <div class="mapbox-header">
+    <span is-="badge" variant-="green">󰗵 {{ $title }}</span>
+  </div>
+  <div class="tui-map" id="{{ $id }}" data-lng="{{ $lng }}" data-lat="{{ $lat }}" data-zoom="{{ $zoom }}" data-marked="{{ $marked }}" data-token="{{ $token }}" style="width: {{ $width }}; height: {{ $height }};"></div>
+</div>

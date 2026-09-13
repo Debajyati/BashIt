@@ -1,0 +1,97 @@
+{{- $raw := cond .IsNamedParams (.Get "url") (.Get 0) | default "" -}}
+{{- $url := $raw -}}
+
+{{/* Options */}}
+{{- $compact := .IsNamedParams | and (eq (.Get "compact") true) -}}
+{{- $noimage := .IsNamedParams | and (eq (.Get "noimage") true) -}}
+{{- $prefer := cond (.IsNamedParams) (.Get "prefer") "og" -}}
+
+{{/* Defaults */}}
+{{- $title := .Get "title" | default $url -}}
+{{- $desc := .Get "desc" | default (.Get "description") | default "" -}}
+{{- $image := .Get "image" | default "" -}}
+
+{{- if ne $url "" -}}
+  {{- $cacheKey := printf "linkcard-%x" (sha1 $url) -}}
+  {{- $cached := site.Store.Get $cacheKey -}}
+  {{- if not $cached -}}
+    {{- $scraperBase := cond .IsNamedParams (.Get "scraperApi") nil | default site.Params.opengraph.scraperApi | default site.Params.scraperApi | default site.Params.xogapi | default "https://xogapi.ddebajyati.workers.dev" -}}
+    {{- $api := "" -}}
+    {{- if strings.Contains $scraperBase "%s" -}}
+      {{- $api = printf $scraperBase (urlquery $url) -}}
+    {{- else -}}
+      {{- $sep := cond (strings.Contains $scraperBase "?") "&" "?" -}}
+      {{- $api = printf "%s%surl=%s" (strings.TrimSuffix "/" $scraperBase) $sep (urlquery $url) -}}
+    {{- end -}}
+    {{- $res := resources.GetRemote $api -}}
+    {{- if $res -}}
+      {{- $data := $res | transform.Unmarshal -}}
+      {{- with $data -}}
+        {{- if eq $prefer "twitter" -}}
+          {{- with .xTwitter -}}
+            {{- with .title }}{{ $title = . }}{{ end -}}
+            {{- with .description }}{{ $desc = . }}{{ end -}}
+            {{- with .image }}{{ $image = . }}{{ end -}}
+          {{- end -}}
+        {{- else -}}
+          {{- with .openGraph -}}
+            {{- with .title }}{{ $title = . }}{{ end -}}
+            {{- with .description }}{{ $desc = . }}{{ end -}}
+            {{- with .image }}{{ $image = . }}{{ end -}}
+          {{- else -}}
+            {{- with .xTwitter -}}
+              {{- with .title }}{{ $title = . }}{{ end -}}
+              {{- with .description }}{{ $desc = . }}{{ end -}}
+              {{- with .image }}{{ $image = . }}{{ end -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+      {{- site.Store.Set $cacheKey (dict "title" $title "desc" $desc "image" $image) -}}
+    {{- end -}}
+  {{- else -}}
+    {{- if eq (.Get "title") nil }}{{ $title = $cached.title }}{{ end -}}
+    {{- if and (eq (.Get "desc") nil) (eq (.Get "description") nil) }}{{ $desc = $cached.desc }}{{ end -}}
+    {{- if eq (.Get "image") nil }}{{ $image = $cached.image }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $domain := "" -}}
+{{- with urls.Parse $url -}}
+  {{- $domain = .Host -}}
+{{- end -}}
+
+<div class="tui-social-embed tui-linkcard-embed" box-="square" style="padding: 1.25rem; margin: 1.5rem 0; background-color: var(--background0); max-width: 680px;">
+  <div class="tui-embed-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+    <div style="display: flex; align-items: center; gap: 0.8ch;">
+      <span is-="badge" variant-="teal">󰌹 LINK</span>
+      {{- with $domain -}}
+        <span style="color: var(--foreground2); font-size: 0.85em;">{{ . }}</span>
+      {{- end -}}
+    </div>
+    <span style="color: var(--foreground2); font-size: 0.8em; font-family: var(--font-family);">[ OPENGRAPH TRANSMISSION ]</span>
+  </div>
+
+  {{- if and $image (not $noimage) -}}
+    <div class="tui-linkcard-image" style="margin: 0.75rem 0; border: 1px solid var(--box-border-color, var(--background2)); overflow: hidden; background-color: #000; max-height: {{ if $compact }}160px{{ else }}260px{{ end }}; display: flex; align-items: center; justify-content: center;">
+      <img src="{{ $image }}" alt="{{ $title }}" style="width: 100%; height: 100%; object-fit: cover; display: block;" loading="lazy">
+    </div>
+  {{- end -}}
+
+  <h3 style="margin: 0.5rem 0; font-size: 1.2rem;">
+    <a href="{{ $url }}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">{{ $title }}</a>
+  </h3>
+
+  {{- if and $desc (not $compact) -}}
+    <div class="tui-linkcard-desc" style="font-family: var(--font-family); font-size: 0.95rem; line-height: 1.5; color: var(--foreground1); margin: 0.5rem 0;">
+      {{ $desc | markdownify }}
+    </div>
+  {{- end -}}
+
+  <div class="tui-embed-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed var(--background2); font-size: 0.85em; flex-wrap: wrap; gap: 0.5rem;">
+    <span style="color: var(--foreground2); word-break: break-all; font-family: var(--font-family);">󰌹 {{ $url }}</span>
+    <a is-="button" variant-="background1" size-="small" href="{{ $url }}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+      [ Visit Link → ]
+    </a>
+  </div>
+</div>

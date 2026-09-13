@@ -1,0 +1,1 @@
+<span is-="badge" variant-="{{ .Get "variant" | default "background2" }}" {{ with .Get "color" }}style="--badge-color: {{ . }};"{{ end }}>{{ .Inner }}</span>

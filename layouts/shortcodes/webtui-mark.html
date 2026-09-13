@@ -1,0 +1,1 @@
+<mark {{ with .Get "bg" }}bg-="{{ . }}"{{ else }}{{ with .Get "variant" }}bg-="{{ . }}"{{ end }}{{ end }} {{ with .Get "fg" }}fg-="{{ . }}"{{ end }}>{{ .Inner }}</mark>

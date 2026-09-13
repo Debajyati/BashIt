@@ -1,0 +1,44 @@
+{{- $box := .Get "box" | default "square" -}}
+{{- $divide := .Get "divide" | default "both" -}}
+{{- $headers := .Get "headers" -}}
+{{- $rawRows := .Get "rows" | default "" -}}
+{{- $colSep := .Get "colSep" | default "|" -}}
+
+{{- /* Determine row separator intelligently */ -}}
+{{- $rowSep := .Get "rowSep" | default "" -}}
+{{- if eq $rowSep "" -}}
+  {{- if strings.Contains $rawRows ";;" -}}
+    {{- $rowSep = ";;" -}}
+  {{- else if strings.Contains $rawRows "\n" -}}
+    {{- $rowSep = "\n" -}}
+  {{- else if strings.Contains $rawRows ";" -}}
+    {{- $rowSep = ";" -}}
+  {{- else -}}
+    {{- $rowSep = "," -}}
+  {{- end -}}
+{{- end -}}
+
+<table box-="{{ $box }}" divide-="{{ $divide }}">
+  {{- with $headers -}}
+    {{- $hSep := cond (strings.Contains . "|") "|" "," -}}
+    <thead>
+      <tr>
+        {{- range split . $hSep -}}
+          {{- with strings.TrimSpace . -}}<th>{{ . | markdownify }}</th>{{- end -}}
+        {{- end -}}
+      </tr>
+    </thead>
+  {{- end -}}
+  <tbody>
+    {{- range split $rawRows $rowSep -}}
+      {{- $trimmedRow := strings.TrimSpace . -}}
+      {{- if ne $trimmedRow "" -}}
+        <tr>
+          {{- range split $trimmedRow $colSep -}}
+            <td>{{ strings.TrimSpace . | markdownify }}</td>
+          {{- end -}}
+        </tr>
+      {{- end -}}
+    {{- end -}}
+  </tbody>
+</table>

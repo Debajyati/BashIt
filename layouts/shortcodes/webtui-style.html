@@ -1,0 +1,6 @@
+{{- $tag := .Get "tag" | default "span" -}}
+{{- $style := cond .IsNamedParams (.Get "style") (.Get 0) | default "" -}}
+{{- $class := cond .IsNamedParams (.Get "class") (.Get 1) | default "" -}}
+{{- $classAttr := cond (ne $class "") (printf ` class="%s"` $class) "" -}}
+{{- $styleAttr := cond (ne $style "") (printf ` style="%s"` ($style | safeCSS)) "" -}}
+{{- printf `<%s%s%s>%s</%s>` $tag $classAttr $styleAttr (.Inner | markdownify) $tag | safeHTML -}}
