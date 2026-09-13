@@ -1,0 +1,86 @@
+/* ==========================================================================
+   JetBrains Mono Nerd Font Webfonts (Regular, Bold, Italic, BoldItalic)
+   ========================================================================== */
+@font-face {
+  font-family: "JetBrainsMono Nerd Font";
+  src: local("JetBrainsMono Nerd Font"),
+       local("JetBrainsMonoNF-Regular"),
+       local("JetBrainsMonoNL Nerd Font"),
+       local("JetBrains Mono Nerd Font"),
+       url("https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@latest/build/fonts/JetBrainsMonoNerdFont-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrainsMono Nerd Font";
+  src: local("JetBrainsMono Nerd Font Bold"),
+       local("JetBrainsMonoNF-Bold"),
+       local("JetBrainsMonoNL Nerd Font Bold"),
+       local("JetBrains Mono Nerd Font Bold"),
+       url("https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@latest/build/fonts/JetBrainsMonoNerdFont-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrainsMono Nerd Font";
+  src: local("JetBrainsMono Nerd Font Italic"),
+       local("JetBrainsMonoNF-Italic"),
+       local("JetBrainsMonoNL Nerd Font Italic"),
+       local("JetBrains Mono Nerd Font Italic"),
+       url("https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@latest/build/fonts/JetBrainsMonoNerdFont-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrainsMono Nerd Font";
+  src: local("JetBrainsMono Nerd Font Bold Italic"),
+       local("JetBrainsMonoNF-BoldItalic"),
+       local("JetBrainsMonoNL Nerd Font Bold Italic"),
+       local("JetBrains Mono Nerd Font Bold Italic"),
+       url("https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@latest/build/fonts/JetBrainsMonoNerdFont-BoldItalic.woff2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Alias: "JetBrains Mono Nerd Font" with space */
+@font-face {
+  font-family: "JetBrains Mono Nerd Font";
+  src: local("JetBrainsMono Nerd Font"),
+       local("JetBrainsMonoNF-Regular"),
+       local("JetBrains Mono Nerd Font"),
+       url("https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@latest/build/fonts/JetBrainsMonoNerdFont-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono Nerd Font";
+  src: local("JetBrainsMono Nerd Font Bold"),
+       local("JetBrainsMonoNF-Bold"),
+       local("JetBrains Mono Nerd Font Bold"),
+       url("https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@latest/build/fonts/JetBrainsMonoNerdFont-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ==========================================================================
+   Symbols Nerd Font (Dedicated Icon Fallback)
+   ========================================================================== */
+@font-face {
+  font-family: "Symbols Nerd Font";
+  src: local("Symbols Nerd Font"),
+       local("SymbolsNerdFont-Regular"),
+       url("https://cdn.jsdelivr.net/gh/mshaugh/nerdfont-webfonts@latest/build/fonts/SymbolsNerdFont-Regular.woff2") format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}

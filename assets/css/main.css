@@ -1,0 +1,727 @@
+/* Make content images responsive */
+.content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+/* Add spacing to content paragraphs */
+.content p {
+  margin-bottom: 1rem;
+}
+
+/* Fix up pre/code blocks */
+.content pre {
+  padding: 1rem;
+  background-color: var(--background1);
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+/* Ensure headings and text wrap properly within ASCII boxed containers */
+article[box-],
+[box-] {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+article[box-] h1,
+article[box-] h2,
+article[box-] h3 {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: normal;
+  line-height: 1.3;
+}
+
+/* Allow badges to wrap if used in headings or text */
+[is-~=badge].wrap,
+.wrap[is-~=badge] {
+  white-space: normal;
+  height: auto;
+  line-height: 1.4;
+  display: inline;
+  padding: 0.1lh 0.8ch;
+  background-image: none;
+  background-color: var(--badge-color, var(--background2));
+}
+
+[is-~=badge].wrap:before,
+[is-~=badge].wrap:after,
+.wrap[is-~=badge]:before,
+.wrap[is-~=badge]:after {
+  display: none;
+}
+
+/* ==========================================================================
+   Typography & Font Family Foundations
+   Default: JetBrains Mono Nerd Font with Symbols Nerd Font fallback
+   ========================================================================== */
+@layer base {
+  :root {
+    --font-family-fallback: "Symbols Nerd Font", monospace;
+    --font-family-global: "JetBrainsMono Nerd Font", "JetBrains Mono Nerd Font", "JetBrains Mono", var(--font-family-fallback);
+    --font-family-paragraph: var(--font-family-global);
+    --font-family-code: var(--font-family-global);
+    --font-family: var(--font-family-global);
+  }
+
+  body, html {
+    font-family: var(--font-family-global, var(--font-family));
+  }
+}
+
+/* Accordion indicator fixes and directory variant extension */
+@layer components {
+  /* --------------------------------------------------------------------------
+     Typography Hierarchy (Global, Paragraph, Code Blocks)
+     -------------------------------------------------------------------------- */
+  h1, h2, h3, h4, h5, h6,
+  button, input, select, textarea,
+  [is-~=button], [is-~=badge],
+  table, nav, [box-] {
+    font-family: var(--font-family-global, var(--font-family));
+  }
+
+  p,
+  .content p,
+  article p,
+  blockquote,
+  .admonition-content,
+  .admonition-content p,
+  .tui-x-body,
+  .tui-dailydev-body,
+  .tui-devto-body,
+  .tui-github-body,
+  .tui-reddit-body,
+  .tui-linkcard-desc,
+  .tui-bbs-body {
+    font-family: var(--font-family-paragraph, var(--font-family-global, var(--font-family)));
+  }
+
+  pre,
+  code,
+  kbd,
+  samp,
+  .highlight,
+  .highlight pre,
+  .content pre,
+  .content code,
+  [is-~=pre],
+  code[class*="language-"],
+  pre[class*="language-"] {
+    font-family: var(--font-family-code, var(--font-family-global, var(--font-family)));
+  }
+
+  /* Admonition icon and Nerd Font symbols dedicated font mapping */
+  .admonition-icon {
+    font-family: "Symbols Nerd Font", "JetBrainsMono Nerd Font", "JetBrains Mono Nerd Font", monospace !important;
+    font-style: normal;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 0.5ch;
+    line-height: 1;
+  }
+
+  details[is-~='accordion'] summary {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  details[is-~='accordion'] > summary::before,
+  details[is-~='accordion'] summary::before {
+    content: "▶ ";
+    font-weight: bold;
+    display: inline-block;
+    color: var(--foreground0);
+  }
+
+  details[is-~='accordion'][open] > summary::before,
+  details[is-~='accordion'][open] summary::before {
+    content: "▼ ";
+    font-weight: bold;
+    display: inline-block;
+    color: var(--foreground0);
+  }
+
+  details[is-~='accordion'][variant-='directory'] summary::before,
+  details[is-~='accordion'][variant-='directory'] > summary::before {
+    content: '>  ';
+    font-weight: bold;
+  }
+
+  details[is-~='accordion'][variant-='directory'][open] summary::before,
+  details[is-~='accordion'][variant-='directory'][open] > summary::before {
+    content: 'v  ';
+    font-weight: bold;
+  }
+
+  /* User-specified rule format */
+  details[is-~='accordion'] {
+    &[variant-='directory'] {
+      summary::before {
+        content: '>  ';
+      }
+
+      &[open] summary::before {
+        content: 'v  ';
+      }
+    }
+  }
+
+  .webtui-file-item,
+  [is-~='file-item'] {
+    display: flex;
+    align-items: center;
+    gap: 0.8ch;
+    line-height: 1.6;
+    padding-left: 2ch;
+    color: var(--foreground1);
+  }
+
+  .webtui-file-item .webtui-file-icon {
+    color: var(--foreground2);
+  }
+
+  /* ==========================================================================
+     Admonition Component (Terminal Callout Boxes)
+     ========================================================================== */
+  .admonition,
+  details.admonition {
+    margin: 1.25rem 0;
+    padding: 0.8rem 1.2rem;
+    position: relative;
+    background-color: var(--background1);
+    color: var(--foreground0);
+  }
+
+  .admonition summary,
+  details.admonition > summary {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: bold;
+    list-style: none;
+  }
+  .admonition summary::-webkit-details-marker,
+  details.admonition > summary::-webkit-details-marker {
+    display: none;
+  }
+  .admonition summary::marker,
+  details.admonition > summary::marker {
+    display: none;
+    content: "";
+  }
+
+  .admonition-title {
+    display: flex;
+    align-items: center;
+    gap: 0.8ch;
+  }
+
+  .admonition-chevron::before {
+    content: "▶";
+    font-size: 0.85em;
+    color: var(--foreground2);
+    transition: transform 0.15s ease;
+  }
+  details.admonition[open] .admonition-chevron::before {
+    content: "▼";
+  }
+
+  .admonition-content {
+    margin-top: 0.8rem;
+    padding-top: 0.6rem;
+    border-top: 1px dashed var(--background2);
+    overflow-wrap: break-word;
+  }
+
+  .admonition-content p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Admonition Type Color Accents */
+  .admonition-note { --box-border-color: var(--blue); }
+  .admonition-abstract { --box-border-color: var(--sapphire); }
+  .admonition-info { --box-border-color: var(--sky); }
+  .admonition-tip { --box-border-color: var(--teal); }
+  .admonition-success { --box-border-color: var(--green); }
+  .admonition-question { --box-border-color: var(--green); }
+  .admonition-warning { --box-border-color: var(--yellow); }
+  .admonition-failure { --box-border-color: var(--red); }
+  .admonition-danger { --box-border-color: var(--red); }
+  .admonition-bug { --box-border-color: var(--maroon); }
+  .admonition-example { --box-border-color: var(--mauve); }
+  .admonition-quote { --box-border-color: var(--peach); }
+  .admonition-important { --box-border-color: var(--lavender); }
+  .admonition-caution { --box-border-color: var(--red); }
+
+  /* ==========================================================================
+     Enhanced Image Component with Left, Center, Right Alignment
+     ========================================================================== */
+  .tui-image-figure {
+    margin: 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+  }
+
+  .tui-image-figure.align-center {
+    align-items: center;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .tui-image-figure.align-left {
+    align-items: flex-start;
+    text-align: left;
+    margin-right: auto;
+  }
+
+  .tui-image-figure.align-right {
+    align-items: flex-end;
+    text-align: right;
+    margin-left: auto;
+  }
+
+  .tui-image-wrapper {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .tui-image-wrapper img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .tui-image-caption {
+    margin-top: 0.5rem;
+    font-size: 0.9em;
+    color: var(--foreground1);
+    font-family: var(--font-family);
+  }
+
+  .tui-caption-prefix {
+    color: var(--foreground2);
+    font-weight: bold;
+    margin-right: 0.5ch;
+  }
+
+  /* ==========================================================================
+     Mermaid Diagrams in Terminal Frame
+     ========================================================================== */
+  .mermaid-container {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background-color: var(--background0);
+    overflow-x: auto;
+  }
+
+  .mermaid-header {
+    margin-bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .mermaid {
+    display: flex;
+    justify-content: center;
+    background-color: transparent !important;
+  }
+  .mermaid svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* ==========================================================================
+     ECharts Visualization Frame
+     ========================================================================== */
+  .echarts-container {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background-color: var(--background0);
+    overflow: hidden;
+  }
+
+  .echarts-header {
+    margin-bottom: 0.75rem;
+  }
+
+  .echarts-chart {
+    max-width: 100%;
+    min-height: 250px;
+  }
+
+  /* ==========================================================================
+     Mapbox / Geo Map Terminal Container
+     ========================================================================== */
+  .mapbox-container {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background-color: var(--background0);
+  }
+
+  .mapbox-header {
+    margin-bottom: 0.75rem;
+  }
+
+  .tui-map {
+    width: 100%;
+    min-height: 300px;
+    border: 1px solid var(--background2);
+    background-color: #111;
+  }
+
+  /* ==========================================================================
+     TypeIt Animated Terminal Prompt
+     ========================================================================== */
+  .typeit-box {
+    margin: 1.25rem 0;
+    padding: 0.8rem 1.2rem;
+    background-color: var(--background0);
+    font-family: var(--font-family);
+  }
+
+  .typeit-header {
+    margin-bottom: 0.5rem;
+  }
+
+  .typeit-content {
+    font-family: var(--font-family);
+    line-height: 1.5;
+    word-break: break-all;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5ch;
+  }
+
+  .typeit-prompt {
+    color: var(--green);
+    font-weight: bold;
+    user-select: none;
+  }
+
+  .typeit-cursor {
+    display: inline-block;
+    color: var(--peach);
+    font-weight: bold;
+    animation: tui-blink 1s step-start infinite;
+  }
+
+  @keyframes tui-blink {
+    50% { opacity: 0; }
+  }
+
+  /* ==========================================================================
+     Terminal Tabs & Tabbed Panes
+     ========================================================================== */
+  .tui-tabs-container {
+    margin: 1.5rem 0;
+  }
+
+  .tui-tab-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5ch;
+    margin-bottom: -1px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .tui-tab-button {
+    cursor: pointer;
+    font-family: var(--font-family);
+    padding: 0.2lh 1.2ch;
+    background-color: var(--background1);
+    color: var(--foreground1);
+    border: 1px solid var(--foreground2);
+    border-bottom: none;
+    user-select: none;
+    transition: background-color 0.1s, color 0.1s;
+  }
+
+  .tui-tab-button:hover {
+    background-color: var(--background2);
+    color: var(--foreground0);
+  }
+
+  .tui-tab-button.active {
+    background-color: var(--foreground0);
+    color: var(--background0);
+    font-weight: bold;
+  }
+
+  .tui-tab-panel {
+    padding: 1rem;
+    background-color: var(--background0);
+    border: 1px solid var(--foreground2);
+    display: none;
+  }
+
+  .tui-tab-panel.active {
+    display: block;
+  }
+
+  /* ==========================================================================
+     Math, Showcase, Friend & Audio Cards
+     ========================================================================== */
+  .tui-math-container {
+    margin: 1.25rem 0;
+    padding: 1rem;
+    background-color: var(--background0);
+    overflow-x: auto;
+    text-align: center;
+  }
+
+  .tui-math-header {
+    text-align: left;
+    margin-bottom: 0.5rem;
+  }
+
+  .tui-showcase-card {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background-color: var(--background0);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .tui-showcase-image {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .tui-showcase-image img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .tui-friend-card {
+    margin: 1rem 0;
+    padding: 0.75rem 1rem;
+    background-color: var(--background0);
+    display: flex;
+    align-items: center;
+    gap: 1.2ch;
+  }
+
+  .tui-friend-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 4px;
+    object-fit: cover;
+  }
+
+  .tui-audio-box {
+    margin: 1.25rem 0;
+    padding: 1rem;
+    background-color: var(--background0);
+  }
+
+  .tui-audio-box audio {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  /* ==========================================================================
+     Disqus Comments Component (WebTUI Terminal Styling)
+     ========================================================================== */
+  .tui-comments-container {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: var(--background0);
+    color-scheme: dark;
+  }
+
+  .tui-comments-header {
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px dashed var(--background2);
+  }
+
+  #disqus_thread {
+    min-height: 120px;
+    color-scheme: dark;
+  }
+
+  .tui-comments-loading {
+    display: flex;
+    align-items: center;
+    gap: 1ch;
+    font-family: var(--font-family);
+  }
+
+  .tui-comments-noscript {
+    padding: 1rem;
+    background-color: var(--background1);
+    color: var(--foreground1);
+    font-family: var(--font-family);
+  }
+
+  /* ==========================================================================
+     Cloudflare Workers + D1 Terminal BBS Comments
+     ========================================================================== */
+  .tui-bbs-thread {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .tui-bbs-comment {
+    padding: 1rem;
+    background-color: var(--background1);
+    border-left: 3px solid var(--blue);
+    font-family: var(--font-family);
+  }
+
+  .tui-bbs-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.85em;
+    flex-wrap: wrap;
+    gap: 0.5ch;
+  }
+
+  .tui-bbs-body {
+    line-height: 1.5;
+    word-break: break-word;
+    color: var(--foreground0);
+  }
+
+  .tui-bbs-body p:last-child {
+    margin-bottom: 0;
+  }
+
+  .tui-bbs-empty {
+    padding: 1.5rem;
+    text-align: center;
+    color: var(--foreground2);
+    border: 1px dashed var(--background2);
+    font-family: var(--font-family);
+  }
+
+  .tui-bbs-form label {
+    font-family: var(--font-family);
+  }
+
+  /* ==========================================================================
+     Tooltip Floating Frame & Outline Fix
+     ========================================================================== */
+  [is-~='tooltip'] {
+    --tooltip-offset-y: 6px;
+    --tooltip-offset-x: 6px;
+    --tooltip-delay: 0.1s;
+    display: inline-block;
+    position: relative;
+  }
+
+  [is-~='tooltip'] [is-~='tooltip-trigger'] {
+    cursor: help;
+    text-decoration: underline dotted var(--foreground2);
+  }
+
+  [is-~='tooltip'] [is-~='tooltip-content'] {
+    background-color: var(--background0);
+    color: var(--foreground0);
+    border: var(--box-border-width, 2px) solid var(--box-border-color, var(--foreground0));
+    padding: 0.25lh 1.2ch;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 100;
+    box-shadow: 2px 2px 0px var(--background2);
+    font-size: 0.9em;
+    font-family: var(--font-family);
+    box-sizing: border-box;
+  }
+
+  /* ==========================================================================
+     Post Navigation (Previous / Next Post Links)
+     ========================================================================== */
+  .post-navigation {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    width: 100%;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .post-nav-item {
+    flex: 1 1 240px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .post-nav-item.next {
+    align-items: flex-end;
+    text-align: right;
+    margin-left: auto;
+  }
+
+  .post-nav-label {
+    font-size: 0.75rem;
+    color: var(--foreground2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.35rem;
+  }
+
+  .post-nav-btn {
+    max-width: 100%;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5ch;
+    text-decoration: none;
+  }
+
+  .post-nav-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 300px;
+  }
+
+  /* ==========================================================================
+     WebTUI Social Embeds (X, Insta, Dev.to, Daily.dev, GitHub, Reddit, SO, YT)
+     ========================================================================== */
+  .tui-social-embed {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    border-radius: 0;
+  }
+
+  .tui-social-embed:hover {
+    box-shadow: 2px 2px 0px var(--foreground2);
+  }
+
+  .tui-x-body a,
+  .tui-devto-body a,
+  .tui-dailydev-body a,
+  .tui-github-body a,
+  .tui-reddit-body a,
+  .tui-stackoverflow-body a {
+    color: var(--blue);
+    text-decoration: underline;
+  }
+
+  .tui-x-body a:hover,
+  .tui-devto-body a:hover,
+  .tui-dailydev-body a:hover,
+  .tui-github-body a:hover,
+  .tui-reddit-body a:hover,
+  .tui-stackoverflow-body a:hover {
+    color: var(--sky);
+  }
+}
+
+
