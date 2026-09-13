@@ -1,0 +1,24 @@
+{
+  "name": "bashit",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@webtui/css": "^0.1.10",
+    "@webtui/plugin-declarative-layout": "^0.0.1",
+    "@webtui/plugin-nf": "^0.1.2",
+    "@webtui/theme-catppuccin": "^0.0.5",
+    "@webtui/theme-everforest": "^0.0.5",
+    "@webtui/theme-gruvbox": "^0.0.3",
+    "@webtui/theme-nord": "^0.0.4",
+    "@webtui/theme-osmium": "^0.0.1",
+    "@webtui/theme-vitesse": "^0.0.3"
+  }
+}
