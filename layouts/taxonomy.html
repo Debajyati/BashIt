@@ -1,0 +1,18 @@
+{{ define "main" }}
+  <column style="gap: 2rem; max-width: 1000px; margin: 0 auto; width: 100%;">
+    <h1>{{ .Title }}</h1>
+    {{ with .Content }}
+      <div class="content">{{ . }}</div>
+    {{ end }}
+    
+    <row style="gap: 1rem; flex-wrap: wrap;">
+      {{ range .Pages }}
+        <a href="{{ .RelPermalink }}">
+          <span is-="badge" variant-="background2" style="font-size: 1.1rem; padding: 0.5rem 1rem;">
+            <span style="font-family: 'Symbols Nerd Font';">&#xf02b;</span> {{ .LinkTitle }} ({{ len .Pages }})
+          </span>
+        </a>
+      {{ end }}
+    </row>
+  </column>
+{{ end }}

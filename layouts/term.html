@@ -1,0 +1,37 @@
+{{ define "main" }}
+  <column style="gap: 2rem; max-width: 1000px; margin: 0 auto; width: 100%;">
+    <h1><span style="font-family: 'Symbols Nerd Font';">&#xf02b;</span> {{ .Title }}</h1>
+    {{ with .Content }}
+      <div class="content">{{ . }}</div>
+    {{ end }}
+    
+    <column style="gap: 1.5rem;">
+      {{ range .Pages }}
+        <div box-="square" style="padding: 1.5rem;">
+          <column style="gap: 0.5rem;">
+            <h2>
+              <a href="{{ .RelPermalink }}" style="color: inherit; text-decoration: none;">{{ .LinkTitle }}</a>
+            </h2>
+            
+            <row style="gap: 1rem; align-items: center; font-size: 0.9rem; color: var(--foreground2);">
+              <span><span style="font-family: 'Symbols Nerd Font';">&#xf073;</span> {{ .Date.Format "Jan 2, 2006" }}</span>
+            </row>
+            
+            <div style="color: var(--foreground1); margin-top: 0.5rem;">
+              {{ .Summary }}
+            </div>
+            
+            {{ with .GetTerms "tags" }}
+              <row style="gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; align-items: center;">
+                <span style="font-family: 'Symbols Nerd Font';">&#xf02b;</span>
+                {{ range . }}
+                  <a href="{{ .RelPermalink }}"><span is-="badge" variant-="background1">{{ .LinkTitle }}</span></a>
+                {{ end }}
+              </row>
+            {{ end }}
+          </column>
+        </div>
+      {{ end }}
+    </column>
+  </column>
+{{ end }}

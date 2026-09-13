@@ -1,0 +1,33 @@
+{{ define "main" }}
+  <column style="gap: 2rem; max-width: 1200px; margin: 0 auto; width: 100%;">
+    <!-- Content from _index.md -->
+    <div class="content" style="padding: 1rem;">
+      {{ .Content }}
+    </div>
+
+    <!-- Recent Posts/Projects -->
+    <column style="gap: 1rem;">
+      <h2 style="padding: 0 1rem;"><span style="font-family: 'Symbols Nerd Font';">&#xf02b;</span> Recent Updates</h2>
+      <row style="flex-wrap: wrap; gap: 1rem; padding: 0 1rem;">
+        {{ range first 6 site.RegularPages }}
+          <div box-="square" style="flex: 1 1 300px; padding: 1rem;">
+            <column style="gap: 0.5rem;">
+              <a href="{{ .RelPermalink }}" style="font-size: 1.2rem; font-weight: bold;">{{ .LinkTitle }}</a>
+              <row style="gap: 0.5rem; align-items: center; font-size: 0.8rem; color: var(--foreground2);">
+                <span style="font-family: 'Symbols Nerd Font';">&#xf073;</span> {{ .Date.Format "Jan 2, 2006" }}
+              </row>
+              <div style="color: var(--foreground1);">
+                {{ .Summary | truncate 100 }}
+              </div>
+              <row style="gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                {{ range .Params.tags }}
+                  <span is-="badge" variant-="background2">#{{ . }}</span>
+                {{ end }}
+              </row>
+            </column>
+          </div>
+        {{ end }}
+      </row>
+    </column>
+  </column>
+{{ end }}

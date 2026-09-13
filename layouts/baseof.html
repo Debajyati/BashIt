@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="{{ site.Language.Locale }}" dir="{{ or site.Language.Direction `ltr` }}" data-webtui-theme="{{ site.Params.webtuiTheme | default "catppuccin" }}">
+<head>
+  {{ partial "head.html" . }}
+</head>
+<body>
+  <column self-="size-screen">
+    {{ partial "header.html" . }}
+    <column self-="grow" style="padding: 1rem;">
+      {{ block "main" . }}{{ end }}
+    </column>
+    {{ partial "footer.html" . }}
+  </column>
+</body>
+</html>

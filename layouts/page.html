@@ -1,0 +1,57 @@
+{{ define "main" }}
+  <column style="max-width: 800px; margin: 0 auto; width: 100%;">
+    <article box-="square" style="padding: 2rem;">
+      <column style="gap: 1rem;">
+        <header>
+          <h1 class="page-title">{{ .Title }}</h1>
+        </header>
+        
+        <row style="gap: 1rem; color: var(--foreground2); font-size: 0.9rem;">
+          {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
+          {{ $dateHuman := .Date | time.Format "Jan 2, 2006" }}
+          <span><span style="font-family: 'Symbols Nerd Font';">&#xf073;</span> <time datetime="{{ $dateMachine }}">{{ $dateHuman }}</time></span>
+        </row>
+        
+        <div is-="separator" style="width: 100%;"></div>
+        
+        <div class="content" style="line-height: 1.6;">
+          {{ .Content }}
+        </div>
+        
+        {{ with .GetTerms "tags" }}
+          <div is-="separator" style="width: 100%; margin-top: 2rem;"></div>
+          <row style="gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+            <span style="font-family: 'Symbols Nerd Font';">&#xf02b;</span>
+            {{ range . }}
+              <a href="{{ .RelPermalink }}"><span is-="badge" variant-="background1">{{ .LinkTitle }}</span></a>
+            {{ end }}
+          </row>
+        {{ end }}
+
+        {{ if or .PrevInSection .NextInSection }}
+          <div is-="separator" style="width: 100%; margin-top: 2rem;"></div>
+          <nav class="post-navigation">
+            <div class="post-nav-item prev">
+              {{ with .PrevInSection }}
+                <span class="post-nav-label">󰁍 Previous Post</span>
+                <a href="{{ .RelPermalink }}" class="post-nav-btn" is-="button" variant-="background1" size-="small">
+                  <span>←</span> <span class="post-nav-title">{{ .LinkTitle }}</span>
+                </a>
+              {{ end }}
+            </div>
+            <div class="post-nav-item next">
+              {{ with .NextInSection }}
+                <span class="post-nav-label">Next Post 󰁔</span>
+                <a href="{{ .RelPermalink }}" class="post-nav-btn" is-="button" variant-="background1" size-="small">
+                  <span class="post-nav-title">{{ .LinkTitle }}</span> <span>→</span>
+                </a>
+              {{ end }}
+            </div>
+          </nav>
+        {{ end }}
+      </column>
+    </article>
+
+    {{ partial "comment.html" . }}
+  </column>
+{{ end }}
