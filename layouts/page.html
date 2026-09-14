@@ -1,6 +1,6 @@
 {{ define "main" }}
-  <column style="max-width: 800px; margin: 0 auto; width: 100%;">
-    <article box-="square" style="padding: 2rem;">
+  <column class="article-column" style="max-width: 800px; margin: 0 auto; width: 100%;">
+    <article class="page-article" box-="square" style="padding: 2rem;">
       <column style="gap: 1rem;">
         <header>
           <h1 class="page-title">{{ .Title }}</h1>
@@ -31,22 +31,22 @@
         {{ if or .PrevInSection .NextInSection }}
           <div is-="separator" style="width: 100%; margin-top: 2rem;"></div>
           <nav class="post-navigation">
-            <div class="post-nav-item prev">
-              {{ with .PrevInSection }}
+            {{ with .PrevInSection }}
+              <div class="post-nav-item prev">
                 <span class="post-nav-label">󰁍 Previous Post</span>
                 <a href="{{ .RelPermalink }}" class="post-nav-btn" is-="button" variant-="background1" size-="small">
                   <span>←</span> <span class="post-nav-title">{{ .LinkTitle }}</span>
                 </a>
-              {{ end }}
-            </div>
-            <div class="post-nav-item next">
-              {{ with .NextInSection }}
+              </div>
+            {{ end }}
+            {{ with .NextInSection }}
+              <div class="post-nav-item next">
                 <span class="post-nav-label">Next Post 󰁔</span>
                 <a href="{{ .RelPermalink }}" class="post-nav-btn" is-="button" variant-="background1" size-="small">
                   <span class="post-nav-title">{{ .LinkTitle }}</span> <span>→</span>
                 </a>
-              {{ end }}
-            </div>
+              </div>
+            {{ end }}
           </nav>
         {{ end }}
       </column>

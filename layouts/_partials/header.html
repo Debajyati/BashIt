@@ -39,24 +39,24 @@
   {{- $icon = "&#xe62b;" -}}
 {{- end -}}
 
-<nav box-="square" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 1rem; margin: 1rem;">
-  <div style="font-weight: bold; font-size: 1.2rem; display: flex; align-items: center;">
-    <a href="{{ site.Home.RelPermalink }}" style="color: var(--foreground0); text-decoration: none; display: inline-flex; align-items: center; gap: 0.6ch;">
+<nav class="site-nav" box-="square">
+  <div class="nav-brand">
+    <a href="{{ site.Home.RelPermalink }}" class="nav-brand-link">
       {{- if and $logo (not $disableIcon) -}}
-        <img src="{{ $logo | relURL }}" alt="{{ site.Title }}" class="navbar-brand-logo" style="height: 1.25em; width: auto; vertical-align: middle; display: inline-block; object-fit: contain;">
+        <img src="{{ $logo | relURL }}" alt="{{ site.Title }}" class="navbar-brand-logo">
       {{- else if and $icon (not $disableIcon) -}}
-        <span class="navbar-brand-icon" style="font-family: 'Symbols Nerd Font', var(--font-family); font-weight: normal; display: inline-flex; align-items: center; line-height: 1;">
+        <span class="navbar-brand-icon">
           {{ $icon | safeHTML }}
         </span>
       {{- end -}}
-      <span>{{ site.Title }}</span>
+      <span class="navbar-brand-title">{{ site.Title }}</span>
     </a>
   </div>
-  <row style="gap: 1rem;">
+  <row class="nav-menu">
     {{- $page := . }}
     {{- range site.Menus.main }}
       {{- $active := or ($page.IsMenuCurrent .Menu .) ($page.HasMenuCurrent .Menu .) }}
-      <a href="{{ .URL }}" style="color: {{ if $active }}var(--green){{ else }}var(--foreground1){{ end }}; text-decoration: none;">
+      <a href="{{ .URL }}" class="nav-menu-item{{ if $active }} active{{ end }}">
         {{- if $active }}<mark variant-="background2">{{ .Name }}</mark>{{ else }}{{ .Name }}{{ end -}}
       </a>
     {{- end }}

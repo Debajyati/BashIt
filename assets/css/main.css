@@ -1,7 +1,61 @@
-/* Make content images responsive */
-.content img {
+/* ==========================================================================
+   Global Mobile & Viewport Safety
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  -webkit-text-size-adjust: 100%;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+}
+
+/* Prevent unnatural word breaks: wrap between words in sentences, paragraphs, headings, and tables */
+p,
+blockquote,
+li,
+h1, h2, h3, h4, h5, h6,
+.content,
+article,
+.page-title,
+.post-title {
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+}
+
+/* Inline code and tags should keep their characters together */
+code,
+pre code,
+kbd,
+samp {
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+}
+
+.article-column {
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Make content images, videos, and iframes responsive */
+.content img,
+img,
+video {
   max-width: 100%;
   height: auto;
+}
+
+iframe {
+  max-width: 100%;
+}
+
+.content img {
   border-radius: 4px;
 }
 
@@ -10,29 +64,52 @@
   margin-bottom: 1rem;
 }
 
-/* Fix up pre/code blocks */
-.content pre {
-  padding: 1rem;
-  background-color: var(--background1);
-  border-radius: 4px;
-  overflow-x: auto;
-}
-
 /* Ensure headings and text wrap properly within ASCII boxed containers */
 article[box-],
-[box-] {
+[box-],
+div[box-],
+section[box-],
+nav[box-] {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
 
-article[box-] h1,
-article[box-] h2,
-article[box-] h3 {
-  max-width: 100%;
+/* Fluid Responsive Typography Scaling */
+h1, .page-title, h1.page-title {
+  font-size: clamp(1.35rem, 4.5vw, 2.2rem);
+  line-height: 1.25;
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
   overflow-wrap: break-word;
   word-wrap: break-word;
-  word-break: normal;
+  hyphens: auto;
+}
+
+h2 {
+  font-size: clamp(1.15rem, 3.5vw, 1.65rem);
   line-height: 1.3;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+h3 {
+  font-size: clamp(1.05rem, 2.8vw, 1.35rem);
+  line-height: 1.35;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+h4, h5, h6 {
+  font-size: 1rem;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 /* Allow badges to wrap if used in headings or text */
@@ -185,15 +262,19 @@ article[box-] h3 {
   }
 
   /* ==========================================================================
-     Admonition Component (Terminal Callout Boxes)
+     Admonition Component (Terminal Callout Boxes) & Callouts
      ========================================================================== */
   .admonition,
-  details.admonition {
+  details.admonition,
+  .webtui-callout-box {
     margin: 1.25rem 0;
     padding: 0.8rem 1.2rem;
     position: relative;
     background-color: var(--background1);
     color: var(--foreground0);
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden; /* Prevents badge or content from spilling beyond ASCII border */
   }
 
   .admonition summary,
@@ -203,8 +284,11 @@ article[box-] h3 {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 0.5rem;
     font-weight: bold;
     list-style: none;
+    width: 100%;
+    max-width: 100%;
   }
   .admonition summary::-webkit-details-marker,
   details.admonition > summary::-webkit-details-marker {
@@ -219,7 +303,76 @@ article[box-] h3 {
   .admonition-title {
     display: flex;
     align-items: center;
-    gap: 0.8ch;
+    gap: 0.5rem;
+    max-width: 100%;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  /* Allow badges inside callouts, admonitions, cards, and embeds to wrap gracefully on mobile without overflowing */
+  .admonition summary span[is-~=badge],
+  .webtui-callout-box span[is-~=badge],
+  .tui-audio-box span[is-~=badge],
+  .tui-gist-container span[is-~=badge],
+  .typeit-box span[is-~=badge],
+  .mermaid-wrapper span[is-~=badge],
+  .math-block span[is-~=badge],
+  .echarts-wrapper span[is-~=badge],
+  .mapbox-wrapper span[is-~=badge],
+  .admonition-badge,
+  .tui-audio-badge,
+  .badge-fluid {
+    white-space: normal !important;
+    height: auto !important;
+    min-height: 1.2lh;
+    line-height: 1.35 !important;
+    display: inline-flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 0.2lh 0.8ch !important;
+    background-image: none !important;
+    background-color: var(--badge-color, var(--background2)) !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    border-radius: 2px;
+  }
+
+  .admonition summary span[is-~=badge] {
+    max-width: calc(100% - 1.8rem) !important;
+  }
+
+  .admonition summary span[is-~=badge]::before,
+  .admonition summary span[is-~=badge]::after,
+  .webtui-callout-box span[is-~=badge]::before,
+  .webtui-callout-box span[is-~=badge]::after,
+  .tui-audio-box span[is-~=badge]::before,
+  .tui-audio-box span[is-~=badge]::after,
+  .tui-gist-container span[is-~=badge]::before,
+  .tui-gist-container span[is-~=badge]::after,
+  .typeit-box span[is-~=badge]::before,
+  .typeit-box span[is-~=badge]::after,
+  .mermaid-wrapper span[is-~=badge]::before,
+  .mermaid-wrapper span[is-~=badge]::after,
+  .math-block span[is-~=badge]::before,
+  .math-block span[is-~=badge]::after,
+  .echarts-wrapper span[is-~=badge]::before,
+  .echarts-wrapper span[is-~=badge]::after,
+  .mapbox-wrapper span[is-~=badge]::before,
+  .mapbox-wrapper span[is-~=badge]::after,
+  .admonition-badge::before,
+  .admonition-badge::after,
+  .tui-audio-badge::before,
+  .tui-audio-badge::after,
+  .badge-fluid::before,
+  .badge-fluid::after {
+    display: none !important;
+  }
+
+  .admonition-chevron {
+    flex-shrink: 0;
+    margin-left: auto;
   }
 
   .admonition-chevron::before {
@@ -232,14 +385,18 @@ article[box-] h3 {
     content: "▼";
   }
 
-  .admonition-content {
+  .admonition-content,
+  .callout-body {
     margin-top: 0.8rem;
     padding-top: 0.6rem;
     border-top: 1px dashed var(--background2);
     overflow-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
   }
 
-  .admonition-content p:last-child {
+  .admonition-content p:last-child,
+  .callout-body p:last-child {
     margin-bottom: 0;
   }
 
@@ -525,11 +682,24 @@ article[box-] h3 {
     margin: 1.25rem 0;
     padding: 1rem;
     background-color: var(--background0);
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .tui-audio-header {
+    display: flex;
+    align-items: flex-start;
+    max-width: 100%;
+    margin-bottom: 0.5rem;
   }
 
   .tui-audio-box audio {
     width: 100%;
-    margin-top: 0.5rem;
+    max-width: 100%;
+    margin-top: 0.25rem;
+    display: block;
+    box-sizing: border-box;
   }
 
   /* ==========================================================================
@@ -698,10 +868,96 @@ article[box-] h3 {
   .tui-social-embed {
     transition: transform 0.15s ease, box-shadow 0.15s ease;
     border-radius: 0;
+    margin: 1.75rem auto !important;
+    box-sizing: border-box !important;
   }
 
   .tui-social-embed:hover {
     box-shadow: 2px 2px 0px var(--foreground2);
+  }
+
+  /* Specific embed max-widths to snugly frame native widgets */
+  .tui-x-embed {
+    max-width: 550px !important;
+  }
+
+  .tui-peerlist-embed {
+    max-width: 520px !important;
+  }
+
+  .tui-instagram-embed {
+    max-width: 540px !important;
+  }
+
+  .tui-reddit-embed {
+    max-width: 640px !important;
+  }
+
+  .tui-dailydev-embed,
+  .tui-linkcard-embed,
+  .tui-github-embed,
+  .tui-devto-embed {
+    max-width: 680px !important;
+  }
+
+  /* Instagram Embed Frame & Full Iframe Height */
+  .tui-instagram-frame {
+    width: 100%;
+    overflow: hidden;
+    background-color: #fff;
+    border-radius: 4px;
+  }
+
+  .tui-instagram-frame iframe {
+    width: 100% !important;
+    height: 620px !important;
+    min-height: 580px !important;
+    border: none !important;
+    display: block !important;
+  }
+
+  /* Reddit Embed Container & Height */
+  .tui-reddit-container {
+    width: 100%;
+    min-height: 240px;
+    box-sizing: border-box;
+  }
+
+  .tui-reddit-container iframe,
+  .tui-reddit-container blockquote {
+    min-height: 240px !important;
+    width: 100% !important;
+  }
+
+  /* Peerlist Embed Frame Snug Centering */
+  .tui-peerlist-frame {
+    width: 100%;
+    background: transparent !important;
+    border: none !important;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Daily.dev & Linkcard Image Aspect Ratio and Framing */
+  .tui-dailydev-image,
+  .tui-linkcard-image {
+    aspect-ratio: 16 / 9;
+    max-height: 320px !important;
+    width: 100% !important;
+    overflow: hidden;
+    background-color: #000;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tui-dailydev-image img,
+  .tui-linkcard-image img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
   }
 
   .tui-x-body a,
@@ -721,6 +977,394 @@ article[box-] h3 {
   .tui-reddit-body a:hover,
   .tui-stackoverflow-body a:hover {
     color: var(--sky);
+  }
+
+  /* ==========================================================================
+     Navbar & Header Component Styling
+     ========================================================================== */
+  .site-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    margin: 1rem;
+    transition: padding 0.2s ease, margin 0.2s ease;
+  }
+
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .nav-brand-link {
+    color: var(--foreground0);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6ch;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+  }
+
+  .nav-brand-title {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+  }
+
+  .nav-brand-logo {
+    height: 1.25em;
+    width: auto;
+    vertical-align: middle;
+    display: inline-block;
+    object-fit: contain;
+  }
+
+  .nav-brand-icon {
+    font-family: 'Symbols Nerd Font', var(--font-family);
+    font-weight: normal;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+  }
+
+  .nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .nav-menu-item {
+    text-decoration: none;
+    color: var(--foreground1);
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    font-size: 0.95rem;
+    padding: 0.1lh 0.4ch;
+  }
+
+  .nav-menu-item.active {
+    color: var(--green);
+  }
+
+  /* ==========================================================================
+     Responsive Tables Wrapper & WebTUI ASCII Table Integrity
+     ========================================================================== */
+  .webtui-table-wrapper {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    margin: 1.25rem 0;
+  }
+
+  /* WebTUI Monospace ASCII Tables (table[box-], table[divide-]) */
+  table[box-],
+  table[divide-] {
+    display: table !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    max-width: 100%;
+    margin: 0;
+  }
+
+  /* Fix WebTUI compound selector bug: connect vertical and horizontal divider lines seamlessly to box border */
+  table[box-][divide-=vertical] th:not(:last-of-type):before,
+  table[box-][divide-=vertical] td:not(:last-of-type):before,
+  table[box-][divide-=both] th:not(:last-of-type):before,
+  table[box-][divide-=both] td:not(:last-of-type):before,
+  table[box-]:not([divide-]) th:not(:last-of-type):before,
+  table[box-]:not([divide-]) td:not(:last-of-type):before {
+    bottom: calc(-.5lh - var(--table-border-width) / 2) !important;
+    border-left: solid var(--table-border-width) var(--table-border-color) !important;
+    height: calc(100% + 1lh) !important;
+  }
+
+  table[box-][divide-=horizontal] tr th:after,
+  table[box-][divide-=horizontal] tr td:after,
+  table[box-][divide-=both] tr th:after,
+  table[box-][divide-=both] tr td:after,
+  table[box-]:not([divide-]) tr th:after,
+  table[box-]:not([divide-]) tr td:after {
+    left: calc(-.5ch - var(--table-border-width) / 2) !important;
+    width: calc(100% + 1ch) !important;
+    border-top: solid var(--table-border-width) var(--table-border-color) !important;
+  }
+
+  /* Table cells: wrap between words, never break mid-word */
+  table th,
+  table td {
+    font-size: 0.9em;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+    white-space: normal;
+  }
+
+  /* Standard Markdown Tables (without WebTUI box-/divide- attributes) */
+  .content table:not([box-]):not([divide-]) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    display: table;
+  }
+
+  .content table:not([box-]):not([divide-]) th,
+  .content table:not([box-]):not([divide-]) td {
+    padding: 0.55rem 0.85rem;
+    border: 1px solid var(--background2);
+  }
+
+  /* Eliminate WebTUI pseudo-element ghost dividers on standard markdown tables */
+  .content table:not([box-]):not([divide-]) th:before,
+  .content table:not([box-]):not([divide-]) td:before,
+  .content table:not([box-]):not([divide-]) tr th:after,
+  .content table:not([box-]):not([divide-]) tr td:after {
+    display: none !important;
+    content: none !important;
+  }
+
+  /* ==========================================================================
+     Code & Pre Blocks Mobile Wrapping
+     ========================================================================== */
+  .content pre,
+  .highlight,
+  .highlight pre,
+  pre[is-~=pre] {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    box-sizing: border-box !important;
+  }
+
+  pre code {
+    white-space: pre !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+  }
+
+  :not(pre) > code {
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    font-size: 0.9em;
+    padding: 0.1em 0.35em;
+    background-color: var(--background2);
+    border-radius: 3px;
+  }
+}
+
+/* ==========================================================================
+   Mobile & Tablet Media Queries (<= 768px & <= 480px)
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* 1. Header / Navbar Layout */
+  .site-nav {
+    margin: 0.5rem !important;
+    padding: 0.65rem 0.75rem !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+  }
+
+  .nav-brand {
+    justify-content: center !important;
+    width: 100% !important;
+  }
+
+  .nav-brand-link {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+  }
+
+  .nav-brand-title {
+    font-size: 1.15rem !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+  }
+
+  .nav-menu {
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 0.4rem 0.8ch !important;
+    width: 100% !important;
+  }
+
+  .nav-menu-item {
+    font-size: 0.88rem !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+  }
+
+  /* Audio player mobile adjustments */
+  .tui-audio-box {
+    padding: 0.75rem !important;
+    margin: 1rem 0 !important;
+  }
+
+  /* Badge mobile container protection */
+  [is-~=badge] {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 2. Main Container & Article Padding */
+  column[self-="grow"] {
+    padding: 0.5rem !important;
+  }
+
+  .page-article,
+  article[box-] {
+    padding: 1.25rem 0.85rem !important;
+  }
+
+  .article-column {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* 3. Admonition Mobile Padding & Title Badge */
+  .admonition,
+  details.admonition,
+  .webtui-callout-box {
+    padding: 0.65rem 0.85rem !important;
+    margin: 1rem 0 !important;
+  }
+
+  /* 4. Table Cells on Mobile */
+  table th, table td {
+    font-size: 0.82em !important;
+  }
+
+  .content table:not([box-]):not([divide-]) th,
+  .content table:not([box-]):not([divide-]) td {
+    padding: 0.35rem 0.5rem !important;
+  }
+
+  /* 5. Post Navigation Stacking */
+  .post-navigation {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+
+  .post-nav-item {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+  }
+
+  .post-nav-item.next {
+    align-items: flex-end !important;
+    text-align: right !important;
+    margin-left: 0 !important;
+  }
+
+  .post-nav-btn {
+    width: auto !important;
+    max-width: 100% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0.6ch !important;
+    box-sizing: border-box !important;
+  }
+
+  .post-nav-title {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: calc(100vw - 8rem) !important;
+  }
+
+  /* 6. Social Embeds Mobile Alignment */
+  .tui-social-embed {
+    padding: 0.85rem !important;
+    margin: 1rem 0 !important;
+  }
+
+  .tui-embed-header,
+  .tui-embed-footer {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+  }
+
+  .tui-embed-footer a[is-~=button] {
+    width: 100% !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+
+  /* 7. Comments Form & Card on Mobile */
+  .tui-comments-container {
+    padding: 0.85rem !important;
+    margin-top: 1.5rem !important;
+  }
+
+  .tui-bbs-form-card {
+    padding: 0.85rem !important;
+  }
+
+  .tui-bbs-comment {
+    padding: 0.75rem !important;
+  }
+
+  .tui-bbs-meta {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.25rem !important;
+  }
+
+  .tui-bbs-form row[gap-="1"] {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+
+  .tui-bbs-form column {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+
+  /* 8. Landing Page Multi-Column Card Wrapping */
+  div[box-][style*="flex: 1 1 340px"],
+  div[box-][style*="flex: 1 1 300px"],
+  div[box-][style*="flex: 1 1 240px"] {
+    flex: 1 1 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+@media (max-width: 480px) {
+  column[self-="grow"] {
+    padding: 0.25rem !important;
+  }
+
+  .page-article,
+  article[box-] {
+    padding: 1rem 0.65rem !important;
+  }
+
+  .site-nav {
+    margin: 0.25rem !important;
+    padding: 0.5rem 0.6rem !important;
+  }
+
+  .nav-menu {
+    gap: 0.35rem 0.6ch !important;
+  }
+
+  .nav-menu-item {
+    font-size: 0.82rem !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+  }
+
+  .tui-audio-box {
+    padding: 0.65rem 0.5rem !important;
   }
 }
 
