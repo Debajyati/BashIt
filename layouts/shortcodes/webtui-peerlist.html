@@ -17,7 +17,7 @@
 
 {{- $url := cond (findRE `^https?://` $raw) $raw (printf "https://peerlist.io/post/%s" $postId) -}}
 
-<div class="tui-social-embed tui-peerlist-embed" box-="square" style="padding: 1.25rem; margin: 1.5rem 0; background-color: var(--background0); max-width: 600px;">
+<div class="tui-social-embed tui-peerlist-embed" box-="square" style="padding: 1.25rem; margin: 1.5rem auto; background-color: var(--background0); max-width: 520px;">
   <div class="tui-embed-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
     <div style="display: flex; align-items: center; gap: 0.8ch;">
       <span is-="badge" variant-="green">󰒋 PEERLIST</span>
@@ -28,12 +28,12 @@
     <span style="color: var(--foreground2); font-size: 0.8em; font-family: var(--font-family);">[ OFFICIAL EMBED ]</span>
   </div>
 
-  <div class="tui-peerlist-frame" style="width: 100%; border: 2px solid var(--box-border-color, var(--foreground0)); background-color: var(--background1); overflow: hidden; border-radius: 4px; display: flex; justify-content: center; padding: 0.5rem 0;">
+  <div class="tui-peerlist-frame" style="width: 100%; border: none; background: transparent; overflow: hidden; display: flex; justify-content: center; padding: 0.25rem 0;">
     <iframe
       id="peerlist-post-{{ $postId }}"
       src="https://peerlist.io/embeds/posts?postId={{ $postId }}"
       width="100%"
-      style="max-width: 480px; min-height: 280px; border: none; display: block;"
+      style="width: 100%; max-width: 480px; min-height: 280px; border: none; display: block; border-radius: 4px;"
       frameborder="0"
       allowfullscreen
       loading="lazy">

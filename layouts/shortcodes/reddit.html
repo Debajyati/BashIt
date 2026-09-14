@@ -31,7 +31,7 @@
 {{- if eq $subreddit "" }}{{ $subreddit = "reddit" }}{{ end -}}
 {{- if eq $title "" }}{{ $title = "Reddit Discussion Thread" }}{{ end -}}
 
-<div class="tui-social-embed tui-reddit-embed" box-="square" style="padding: 1.25rem; margin: 1.5rem 0; background-color: var(--background0); max-width: 680px;">
+<div class="tui-social-embed tui-reddit-embed" box-="square" style="padding: 1.25rem; margin: 1.5rem auto; background-color: var(--background0); max-width: 640px;">
   <div class="tui-embed-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
     <div style="display: flex; align-items: center; gap: 0.8ch; font-size: 0.9em;">
       <span is-="badge" variant-="peach"> REDDIT</span>
@@ -43,8 +43,8 @@
     <span style="color: var(--foreground2); font-size: 0.8em; font-family: var(--font-family);">[ OFFICIAL EMBED ]</span>
   </div>
 
-  <div class="tui-reddit-container" style="margin: 0.5rem 0; overflow: hidden; border: 1px solid var(--background2); border-radius: 6px; padding: 0.5rem; background-color: var(--background1);">
-    <blockquote class="reddit-embed-bq" data-embed-theme="dark" style="margin: 0; min-height: 180px;">
+  <div class="tui-reddit-container" style="margin: 0.5rem 0; overflow: hidden; border: 1px solid var(--background2); border-radius: 6px; padding: 0.5rem; background-color: var(--background1); min-height: 240px;">
+    <blockquote class="reddit-embed-bq" data-embed-theme="dark" style="margin: 0; min-height: 240px; width: 100%;">
       <a href="{{ $url }}">{{ $title }}</a>
       {{- if ne $author "" -}}
         <br> by <a href="https://www.reddit.com/user/{{ strings.TrimPrefix "u/" $author }}/">u/{{ strings.TrimPrefix "u/" $author }}</a>

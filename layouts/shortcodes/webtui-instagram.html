@@ -16,7 +16,7 @@
 {{- end -}}
 
 {{- if ne $id "" -}}
-<div class="tui-social-embed tui-instagram-embed" box-="square" style="padding: 1.25rem; margin: 1.5rem 0; background-color: var(--background0); max-width: 600px;">
+<div class="tui-social-embed tui-instagram-embed" box-="square" style="padding: 1.25rem; margin: 1.5rem auto; background-color: var(--background0); max-width: 540px;">
   <div class="tui-embed-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
     <div style="display: flex; align-items: center; gap: 0.8ch;">
       <span is-="badge" variant-="pink"> INSTAGRAM</span>
@@ -34,7 +34,7 @@
       scrolling="no"
       allowtransparency="true"
       loading="lazy"
-      style="border: none; width: 100%; display: block;">
+      style="border: none; width: 100%; min-height: 580px; height: 620px; display: block;">
     </iframe>
   </div>
 
@@ -46,7 +46,7 @@
   </div>
 </div>
 {{- else -}}
-<div class="tui-social-embed tui-instagram-embed" box-="square" style="padding: 1.25rem; margin: 1.5rem 0; background-color: var(--background0); max-width: 580px;">
+<div class="tui-social-embed tui-instagram-embed" box-="square" style="padding: 1.25rem; margin: 1.5rem auto; background-color: var(--background0); max-width: 540px;">
   <div class="tui-embed-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
     <div style="display: flex; align-items: center; gap: 0.8ch;">
       <span is-="badge" variant-="pink"> INSTAGRAM</span>

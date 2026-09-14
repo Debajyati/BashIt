@@ -3,8 +3,8 @@
 {{- $artist := cond .IsNamedParams (.Get "artist") (.Get 2) | default "" -}}
 
 <div class="tui-audio-box" box-="square">
-  <div>
-    <span is-="badge" variant-="peach"> {{ $title }}{{ with $artist }} - {{ . }}{{ end }}</span>
+  <div class="tui-audio-header">
+    <span class="tui-audio-badge" is-="badge" variant-="peach"> {{ $title }}{{ with $artist }} - {{ . }}{{ end }}</span>
   </div>
   <audio controls preload="none">
     <source src="{{ $src }}">
