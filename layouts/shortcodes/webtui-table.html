@@ -18,27 +18,29 @@
   {{- end -}}
 {{- end -}}
 
-<table box-="{{ $box }}" divide-="{{ $divide }}">
-  {{- with $headers -}}
-    {{- $hSep := cond (strings.Contains . "|") "|" "," -}}
-    <thead>
-      <tr>
-        {{- range split . $hSep -}}
-          {{- with strings.TrimSpace . -}}<th>{{ . | markdownify }}</th>{{- end -}}
-        {{- end -}}
-      </tr>
-    </thead>
-  {{- end -}}
-  <tbody>
-    {{- range split $rawRows $rowSep -}}
-      {{- $trimmedRow := strings.TrimSpace . -}}
-      {{- if ne $trimmedRow "" -}}
+<div class="webtui-table-wrapper">
+  <table box-="{{ $box }}" divide-="{{ $divide }}">
+    {{- with $headers -}}
+      {{- $hSep := cond (strings.Contains . "|") "|" "," -}}
+      <thead>
         <tr>
-          {{- range split $trimmedRow $colSep -}}
-            <td>{{ strings.TrimSpace . | markdownify }}</td>
+          {{- range split . $hSep -}}
+            {{- with strings.TrimSpace . -}}<th>{{ . | markdownify }}</th>{{- end -}}
           {{- end -}}
         </tr>
-      {{- end -}}
+      </thead>
     {{- end -}}
-  </tbody>
-</table>
+    <tbody>
+      {{- range split $rawRows $rowSep -}}
+        {{- $trimmedRow := strings.TrimSpace . -}}
+        {{- if ne $trimmedRow "" -}}
+          <tr>
+            {{- range split $trimmedRow $colSep -}}
+              <td>{{ strings.TrimSpace . | markdownify }}</td>
+            {{- end -}}
+          </tr>
+        {{- end -}}
+      {{- end -}}
+    </tbody>
+  </table>
+</div>
