@@ -680,7 +680,7 @@ h4, h5, h6 {
 
   .tui-audio-box {
     margin: 1.25rem 0;
-    padding: 1rem;
+    padding: 1.25rem;
     background-color: var(--background0);
     max-width: 100%;
     box-sizing: border-box;
@@ -1200,7 +1200,7 @@ h4, h5, h6 {
 
   /* Audio player mobile adjustments */
   .tui-audio-box {
-    padding: 0.75rem !important;
+    padding: 1rem !important;
     margin: 1rem 0 !important;
   }
 
@@ -1364,7 +1364,7 @@ h4, h5, h6 {
   }
 
   .tui-audio-box {
-    padding: 0.65rem 0.5rem !important;
+    padding: 1.65rem 1rem !important;
   }
 }
 
